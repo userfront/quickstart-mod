@@ -1,17 +1,44 @@
 <template>
-  <div id="app-vue">
-    <Login />
+  <div id="app-quickstart">
+    <el-card v-loading="loading">Hello</el-card>
   </div>
 </template>
 
 <script>
-import Login from "./components/Login.vue";
+import axios from "axios";
+import Cookies from "js-cookie";
+
+const apiUrl = "https://api.userfront.com/v0";
+const projectEid = "";
 
 export default {
   name: "App",
-  components: {
-    Login,
+  data() {
+    return {
+      cookieName: `auth.${projectEid}`,
+      modData: this.$mod.data || {},
+      loading: false,
+      self: {}
+    };
   },
+  computed: {},
+  methods: {
+    async defineSelf(authToken) {
+      this.loading = true;
+      try {
+        const { data } = await axios.get(`${apiUrl}users/self`, {
+          headers: {
+            authorization: `Bearer ${authToken}`
+          }
+        });
+        this.self = data;
+        this.loading = false;
+      } catch (err) {
+        this.loading = false;
+        Cookies.remove(this.cookieName);
+      }
+    }
+  }
 };
 </script>
 

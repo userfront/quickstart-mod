@@ -34,7 +34,9 @@ async function init() {
     .then(process.exit)
     .catch((error) => {
       console.log(error.message);
-      console.log(Buffer.byteLength(data, "utf8") + " bytes (data)");
+      console.log(
+        Buffer.byteLength(JSON.stringify(data), "utf8") + " bytes (data)"
+      );
       process.exit();
     });
 }

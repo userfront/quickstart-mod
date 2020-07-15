@@ -1,14 +1,62 @@
 <template>
   <div id="app-quickstart">
-    <el-card v-loading="loading">Hello</el-card>
+    <el-tabs v-model="activeName" @tab-click="tabChange" type="border-card" v-loading="loading">
+      <el-dropdown trigger="click">
+        <el-button size="small">
+          {{ projectEid }}
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item>Action 1</el-dropdown-item>
+          <el-dropdown-item>Action 2</el-dropdown-item>
+          <el-dropdown-item>Action 3</el-dropdown-item>
+          <el-dropdown-item>Action 4</el-dropdown-item>
+          <el-dropdown-item>Action 5</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>&nbsp;
+      <small>
+        <i class="el-icon-arrow-right"></i>
+      </small>
+      &nbsp;
+      <el-dropdown trigger="click">
+        <el-button size="small">
+          Signup form
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item>Action 1</el-dropdown-item>
+          <el-dropdown-item>Action 2</el-dropdown-item>
+          <el-dropdown-item>Action 3</el-dropdown-item>
+          <el-dropdown-item>Action 4</el-dropdown-item>
+          <el-dropdown-item>Action 5</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>&nbsp;
+      <!-- HTML -->
+      <el-tab-pane label="HTML" name="html">
+        <p>Add once inside document head</p>
+        <pre><code class="language-html" v-html="scriptHtml(projectEid)"></code></pre>
+        <br />
+        <p>Add inside document body where you want it to show</p>
+        <pre><code class="language-html" v-html="modHtml(mod)"></code></pre>
+      </el-tab-pane>
+      <!-- /HTML -->
+
+      <!-- React -->
+      <el-tab-pane label="React" name="react">React</el-tab-pane>
+      <!-- /React -->
+      <el-tab-pane label="Vue" name="vue">Vue</el-tab-pane>
+      <el-tab-pane label="Angular" name="angular">Angular</el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import Cookies from "js-cookie";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
 
-const apiUrl = "https://api.userfront.com/v0";
+const apiUrl = "https://api.userfront.com/v0/";
 const projectEid = "";
 
 export default {
@@ -18,11 +66,34 @@ export default {
       cookieName: `auth.${projectEid}`,
       modData: this.$mod.data || {},
       loading: false,
-      self: {}
+      activeName: "html",
+      html: "",
+      self: {},
+      projectEid: "demo1234",
+      mod: {
+        eid: "abcdefgh",
+        title: "Signup mod"
+      }
     };
   },
-  computed: {},
   methods: {
+    scriptHtml(eid) {
+      const scr = `&lt;script id="Userfront-script"&gt;
+  (function(m,o,d,u,l,a,r,i,z,e) {
+    u[m]={rq:[],ready:function(j){u[m].rq.push(j);},m:m,o:o,d:d,r:r};function j(s){return encodeURIComponent(btoa(s));}z=l.getElementById(m+"-"+a);r=u.location;
+    e=[d+"/page/"+o+"/"+j(r.pathname)+"/"+j(r.host)+"?t="+Date.now(),d];e.map(function(w){i=l.createElement(a);i.defer=1;i.src=w;z.parentNode.insertBefore(i,z);});u.amvartem=m;
+  })("Userfront", "${eid}", "https://mod.userfront.com/v2",window,document,"script");
+&lt;/script&gt;`;
+      return scr;
+    },
+    modHtml({ eid, title }) {
+      let tag = `&lt;div id="userfront-${eid}"&gt;&lt;/div&gt;`;
+      if (title) tag = `&lt;!-- ${title} --&gt;\n${tag}`;
+      return tag;
+    },
+    tabChange(tab) {
+      console.log("tabChange", tab);
+    },
     async defineSelf(authToken) {
       this.loading = true;
       try {
@@ -38,17 +109,22 @@ export default {
         Cookies.remove(this.cookieName);
       }
     }
+  },
+  mounted() {
+    document
+      .querySelectorAll("#app-quickstart pre > code")
+      .forEach(hljs.highlightBlock);
   }
 };
 </script>
 
 <style lang="scss" scoped>
-#app-vue {
+#app-quickstart {
   position: relative;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  max-width: 420px;
   color: #2c3e50;
   /deep/ h2 {
     font-size: 1.5em;

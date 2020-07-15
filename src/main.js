@@ -2,25 +2,27 @@ import Vue from "vue";
 import App from "./App.vue";
 import { modId, ModData } from "../anymod/anymod.config.js";
 import {
-  Alert,
   Button,
   Card,
-  Form,
-  FormItem,
-  Input,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
   Loading,
+  TabPane,
+  Tabs,
 } from "element-ui";
 import "./styles/element-variables.scss";
 
 Vue.config.productionTip = false;
 
-Vue.use(Alert);
 Vue.use(Button);
 Vue.use(Card);
-Vue.use(Form);
-Vue.use(FormItem);
-Vue.use(Input);
+Vue.use(Dropdown);
+Vue.use(DropdownMenu);
+Vue.use(DropdownItem);
 Vue.use(Loading);
+Vue.use(TabPane);
+Vue.use(Tabs);
 
 Vue.use(ModData);
 

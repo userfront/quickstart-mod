@@ -1,6 +1,11 @@
 <template>
   <div id="app-quickstart">
-    <el-tabs v-model="activeName" @tab-click="tabChange" type="border-card" v-loading="loading">
+    <el-tabs
+      v-model="activeName"
+      @tab-click="tabChange"
+      type="border-card"
+      v-loading="loading"
+    >
       <el-dropdown trigger="click">
         <el-button size="small">
           {{ projectEid }}
@@ -12,8 +17,8 @@
           <el-dropdown-item>Action 3</el-dropdown-item>
           <el-dropdown-item>Action 4</el-dropdown-item>
           <el-dropdown-item>Action 5</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>&nbsp;
+        </el-dropdown-menu> </el-dropdown
+      >&nbsp;
       <small>
         <i class="el-icon-arrow-right"></i>
       </small>
@@ -29,14 +34,14 @@
           <el-dropdown-item>Action 3</el-dropdown-item>
           <el-dropdown-item>Action 4</el-dropdown-item>
           <el-dropdown-item>Action 5</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>&nbsp;
+        </el-dropdown-menu> </el-dropdown
+      >&nbsp;
       <!-- HTML -->
       <el-tab-pane label="HTML" name="html">
-        <p>Add once inside document head</p>
+        <p>Paste inside HTML <span class="code">&lt;head&gt;</span>:</p>
         <pre><code class="language-html" v-html="scriptHtml(projectEid)"></code></pre>
         <br />
-        <p>Add inside document body where you want it to show</p>
+        <p>Paste inside HTML <span class="code">&lt;body&gt;</span>:</p>
         <pre><code class="language-html" v-html="modHtml(mod)"></code></pre>
       </el-tab-pane>
       <!-- /HTML -->
@@ -72,8 +77,8 @@ export default {
       projectEid: "demo1234",
       mod: {
         eid: "abcdefgh",
-        title: "Signup mod"
-      }
+        title: "Signup mod",
+      },
     };
   },
   methods: {
@@ -99,8 +104,8 @@ export default {
       try {
         const { data } = await axios.get(`${apiUrl}users/self`, {
           headers: {
-            authorization: `Bearer ${authToken}`
-          }
+            authorization: `Bearer ${authToken}`,
+          },
         });
         this.self = data;
         this.loading = false;
@@ -108,13 +113,13 @@ export default {
         this.loading = false;
         Cookies.remove(this.cookieName);
       }
-    }
+    },
   },
   mounted() {
     document
       .querySelectorAll("#app-quickstart pre > code")
       .forEach(hljs.highlightBlock);
-  }
+  },
 };
 </script>
 
@@ -128,6 +133,13 @@ export default {
   color: #2c3e50;
   /deep/ h2 {
     font-size: 1.5em;
+  }
+  .code {
+    font-size: 90%;
+    background: #f8f8f8;
+    display: inline-block;
+    padding: 1px 3px;
+    margin: 0 2px;
   }
 }
 </style>

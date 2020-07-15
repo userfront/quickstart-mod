@@ -18,6 +18,8 @@ async function getFileString(path, fileType) {
 async function init() {
   const rawCss = await getFileString("./dist/css", "css");
   const rawJs = await getFileString("./dist/js", "js");
+  console.log(Buffer.byteLength(rawCss, "utf8") + " bytes (rawCss)");
+  console.log(Buffer.byteLength(rawJs, "utf8") + " bytes (rawJs)");
   return axios({
     method: "put",
     url: `https://api.anymod.com/v0/mods/${modId}`,

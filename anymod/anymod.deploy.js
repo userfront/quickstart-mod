@@ -25,7 +25,8 @@ async function init() {
   };
   return axios({
     method: "put",
-    url: `https://api.anymod.com/v0/mods/${modId}`,
+    // url: `https://api.anymod.com/v0/mods/${modId}`,
+    url: `https://anymod-backend-7.us-east-1.elasticbeanstalk.com/v0/mods/${modId}`,
     headers: {
       authorization: `Bearer ${process.env.ANYMOD_UPDATE_TOKEN}`,
     },

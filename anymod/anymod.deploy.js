@@ -18,23 +18,23 @@ async function getFileString(path, fileType) {
 async function init() {
   const rawCss = await getFileString("./dist/css", "css");
   const rawJs = await getFileString("./dist/js", "js");
-  console.log(Buffer.byteLength(rawCss, "utf8") + " bytes (rawCss)");
-  console.log(Buffer.byteLength(rawJs, "utf8") + " bytes (rawJs)");
+  const data = {
+    rawHtml: modHtml,
+    rawCss,
+    rawJs,
+  };
   return axios({
     method: "put",
     url: `https://api.anymod.com/v0/mods/${modId}`,
     headers: {
       authorization: `Bearer ${process.env.ANYMOD_UPDATE_TOKEN}`,
     },
-    data: {
-      rawHtml: modHtml,
-      rawCss,
-      rawJs,
-    },
+    data,
   })
     .then(process.exit)
     .catch((error) => {
       console.log(error.message);
+      console.log(Buffer.byteLength(data, "utf8") + " bytes (data)");
       process.exit();
     });
 }

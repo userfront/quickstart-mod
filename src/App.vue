@@ -58,7 +58,7 @@
 <script>
 import axios from "axios";
 import Cookies from "js-cookie";
-import hljs from "highlight.js";
+import hljs from "highlight.js/lib/core";
 import "highlight.js/styles/github.css";
 
 const apiUrl = "https://api.userfront.com/v0/";

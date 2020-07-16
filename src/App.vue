@@ -59,6 +59,12 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import hljs from "highlight.js/lib/core";
+import hljsHtml from "highlight.js/lib/languages/xml";
+import hljsJs from "highlight.js/lib/languages/javascript";
+import hljsCss from "highlight.js/lib/languages/css";
+hljs.registerLanguage("html", hljsHtml);
+hljs.registerLanguage("javascript", hljsJs);
+hljs.registerLanguage("css", hljsCss);
 import "highlight.js/styles/github.css";
 
 const apiUrl = "https://api.userfront.com/v0/";

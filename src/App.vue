@@ -157,3 +157,18 @@ export default {
   }
 }
 </style>
+
+<style lang="scss">
+.el-dropdown-menu.el-popper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  padding: 10px 0;
+  margin: 5px 0;
+  background-color: #fff;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+</style>

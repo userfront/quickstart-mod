@@ -6,7 +6,7 @@
       type="border-card"
       v-loading="loading"
     >
-      <el-dropdown trigger="click">
+      <el-dropdown trigger="click" @visible-change="addModStyling">
         <el-button size="small">
           {{ projectEid }}
           <i class="el-icon-arrow-down el-icon--right"></i>
@@ -23,7 +23,7 @@
         <i class="el-icon-arrow-right"></i>
       </small>
       &nbsp;
-      <el-dropdown trigger="click">
+      <el-dropdown trigger="click" @visible-change="addModStyling">
         <el-button size="small">
           Signup form
           <i class="el-icon-arrow-down el-icon--right"></i>
@@ -112,6 +112,20 @@ export default {
       } catch (err) {
         this.loading = false;
         Cookies.remove(this.cookieName);
+      }
+    },
+    // Add the mod key to the menu since it's outside of the mod,
+    // so that the mod styling will apply to the menu too.
+    addModStyling(isOpening) {
+      try {
+        if (!isOpening) return;
+        document
+          .querySelectorAll(".el-dropdown-menu.el-popper")
+          .forEach((el) => {
+            el.setAttribute(this.$mod.key, "");
+          });
+      } catch (err) {
+        return;
       }
     },
   },

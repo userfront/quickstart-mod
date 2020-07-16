@@ -16,6 +16,7 @@ const ModData = {
       /*global mod*/
       modObj = mod;
     }
+    modObj.key = modId;
     Vue.prototype.$mod = modObj;
   },
 };

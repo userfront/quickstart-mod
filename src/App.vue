@@ -14,9 +14,6 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>Action 1</el-dropdown-item>
           <el-dropdown-item>Action 2</el-dropdown-item>
-          <el-dropdown-item>Action 3</el-dropdown-item>
-          <el-dropdown-item>Action 4</el-dropdown-item>
-          <el-dropdown-item>Action 5</el-dropdown-item>
         </el-dropdown-menu> </el-dropdown
       >&nbsp;
       <small>
@@ -47,10 +44,47 @@
       <!-- /HTML -->
 
       <!-- React -->
-      <el-tab-pane label="React" name="react">React</el-tab-pane>
+      <el-tab-pane label="React" name="react">
+        <p>Paste inside HTML <span class="code">&lt;head&gt;</span>:</p>
+        <pre><code class="language-html" v-html="scriptHtml(projectEid)"></code></pre>
+        <br />
+        <p>
+          Add <span class="code">div</span> and
+          <span class="code">Userfront.render()</span>:
+        </p>
+        <pre><code class="language-javascript" v-html="modReact(mod)"></code></pre>
+      </el-tab-pane>
       <!-- /React -->
-      <el-tab-pane label="Vue" name="vue">Vue</el-tab-pane>
-      <el-tab-pane label="Angular" name="angular">Angular</el-tab-pane>
+
+      <!-- Vue -->
+      <el-tab-pane label="Vue" name="vue">
+        <p>Paste inside HTML <span class="code">&lt;head&gt;</span>:</p>
+        <pre><code class="language-html" v-html="scriptHtml(projectEid)"></code></pre>
+        <br />
+        <p>Add the div inside your app HTML:</p>
+        <pre><code class="language-html" v-html="modVueHtml(mod)"></code></pre>
+        <p>Call <span class="code">Userfront.render()</span> in JS:</p>
+        <pre><code class="language-javascript" v-html="modVueJs()"></code></pre>
+      </el-tab-pane>
+      <!-- /Vue -->
+
+      <!-- Angular -->
+      <el-tab-pane label="Angular" name="angular">
+        <p>Paste inside HTML <span class="code">&lt;head&gt;</span>:</p>
+        <pre><code class="language-html" v-html="scriptHtml(projectEid)"></code></pre>
+        <br />
+        <p>
+          Make <span class="code">Userfront</span> available in your
+          <span class="code">.ts</span> file:
+        </p>
+        <pre><code class="language-javascript">declare var Userfront: any;</code></pre>
+        <br />
+        <p>
+          Call <span class="code">Userfront.render()</span> in your component:
+        </p>
+        <pre><code class="language-javascript" v-html="modAngular(mod)"></code></pre>
+      </el-tab-pane>
+      <!-- /Angular -->
     </el-tabs>
   </div>
 </template>
@@ -101,6 +135,46 @@ export default {
       let tag = `&lt;div id="userfront-${eid}"&gt;&lt;/div&gt;`;
       if (title) tag = `&lt;!-- ${title} --&gt;\n${tag}`;
       return tag;
+    },
+    modReact({ eid, title }) {
+      return `class Demo extends React.Component {
+  componentDidMount () {
+    Userfront.render()
+  }
+  render () {
+    // ${title}
+    return &lt;div id="userfront-${eid}"&gt;&lt;/div&gt;
+  }
+}`;
+    },
+    modVueHtml({ eid, title }) {
+      return `&lt;div id="app"&gt;
+
+  // ${title}
+  &lt;div id="userfront-${eid}"&gt;&lt;/div&gt;
+
+&lt;/div&gt;`;
+    },
+    modVueJs() {
+      return `new Vue({
+  el: '#app',
+  mounted: function () {
+    Userfront.render()
+  }
+})`;
+    },
+    modAngular({ eid }) {
+      return `
+@Component({
+  ...
+  template: \`&lt;div id="userfront-${eid}"&gt;&lt;/div&gt;\`,
+})
+class UserfrontDemo {
+  ...
+  ngOnInit() {
+    Userfront.render()
+  }
+}`;
     },
     tabChange(tab) {
       console.log("tabChange", tab);
@@ -176,7 +250,6 @@ export default {
     font-size: 1.5em;
   }
   .code {
-    font-size: 90%;
     background: #f8f8f8;
     display: inline-block;
     padding: 1px 3px;

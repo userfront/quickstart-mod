@@ -139,6 +139,27 @@ export default {
     document
       .querySelectorAll("#app-quickstart pre > code")
       .forEach(hljs.highlightBlock);
+
+    // Hack to add styles outside of mod
+    const styleTag = document.createElement("style");
+    styleTag.type = "text/css";
+    styleTag.innerHTML = `
+.el-dropdown-menu.el-popper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  padding: 10px 0;
+  margin: 5px 0;
+  background-color: #fff;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}`;
+    document.head.appendChild(styleTag);
   },
 };
 </script>
@@ -160,26 +181,6 @@ export default {
     display: inline-block;
     padding: 1px 3px;
     margin: 0 2px;
-  }
-}
-</style>
-
-<style lang="scss">
-@at-root {
-  .el-dropdown-menu.el-popper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    padding: 10px 0;
-    margin: 5px 0;
-    background-color: #fff;
-    border: 1px solid #ebeef5;
-    border-radius: 4px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 }
 </style>

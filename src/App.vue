@@ -11,14 +11,17 @@
         @visible-change="addModStyling"
         placement="bottom-start"
       >
-        <el-button size="small">
+        <el-button
+          size="small"
+          icon="el-icon-arrow-down"
+          style="min-width:160px;text-align:left;"
+        >
           {{ project.title || project.eid }}
-          <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>Project 2</el-dropdown-item>
+          <el-dropdown-item>Project 2 with a longer name</el-dropdown-item>
           <el-dropdown-item
-            >Create new project <i class="el-icon-plus el-icon--right"></i
+            >New project <i class="el-icon-plus el-icon--right"></i
           ></el-dropdown-item>
         </el-dropdown-menu> </el-dropdown
       >&nbsp;
@@ -27,9 +30,8 @@
       </small>
       &nbsp;
       <el-dropdown trigger="click" @visible-change="addModStyling">
-        <el-button size="small">
+        <el-button size="small" icon="el-icon-arrow-down">
           Signup form
-          <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>Login form</el-dropdown-item>
@@ -96,6 +98,7 @@
 <script>
 import axios from "axios";
 import Cookies from "js-cookie";
+
 import hljs from "highlight.js/lib/core";
 import hljsHtml from "highlight.js/lib/languages/xml";
 import hljsJs from "highlight.js/lib/languages/javascript";
@@ -239,6 +242,13 @@ class UserfrontDemo {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  max-width: 170px;
+  overflow: hidden;
+}
+.el-dropdown-menu__item {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre;
 }`;
     document.head.appendChild(styleTag);
   },

@@ -6,9 +6,13 @@
       type="border-card"
       v-loading="loading"
     >
-      <el-dropdown trigger="click" @visible-change="addModStyling">
+      <el-dropdown
+        trigger="click"
+        @visible-change="addModStyling"
+        placement="bottom-start"
+      >
         <el-button size="small">
-          {{ projectEid }}
+          {{ project.title || project.eid }}
           <i class="el-icon-arrow-down el-icon--right"></i>
         </el-button>
         <el-dropdown-menu slot="dropdown">
@@ -36,7 +40,7 @@
       <!-- HTML -->
       <el-tab-pane label="HTML" name="html">
         <p>Paste inside HTML <span class="code">&lt;head&gt;</span>:</p>
-        <pre><code class="language-html" v-html="scriptHtml(projectEid)"></code></pre>
+        <pre><code class="language-html" v-html="scriptHtml(project.eid)"></code></pre>
         <br />
         <p>Paste inside HTML <span class="code">&lt;body&gt;</span>:</p>
         <pre><code class="language-html" v-html="modHtml(mod)"></code></pre>
@@ -46,7 +50,7 @@
       <!-- React -->
       <el-tab-pane label="React" name="react">
         <p>Paste inside HTML <span class="code">&lt;head&gt;</span>:</p>
-        <pre><code class="language-html" v-html="scriptHtml(projectEid)"></code></pre>
+        <pre><code class="language-html" v-html="scriptHtml(project.eid)"></code></pre>
         <br />
         <p>
           Add <span class="code">div</span> and
@@ -59,7 +63,7 @@
       <!-- Vue -->
       <el-tab-pane label="Vue" name="vue">
         <p>Paste inside HTML <span class="code">&lt;head&gt;</span>:</p>
-        <pre><code class="language-html" v-html="scriptHtml(projectEid)"></code></pre>
+        <pre><code class="language-html" v-html="scriptHtml(project.eid)"></code></pre>
         <br />
         <p>Add the div inside your app HTML:</p>
         <pre><code class="language-html" v-html="modVueHtml(mod)"></code></pre>
@@ -71,7 +75,7 @@
       <!-- Angular -->
       <el-tab-pane label="Angular" name="angular">
         <p>Paste inside HTML <span class="code">&lt;head&gt;</span>:</p>
-        <pre><code class="language-html" v-html="scriptHtml(projectEid)"></code></pre>
+        <pre><code class="language-html" v-html="scriptHtml(project.eid)"></code></pre>
         <br />
         <p>
           Make <span class="code">Userfront</span> available in your
@@ -114,7 +118,10 @@ export default {
       activeName: "html",
       html: "",
       self: {},
-      projectEid: "demo1234",
+      project: {
+        eid: "demo1234",
+        title: "Demo project",
+      },
       mod: {
         eid: "abcdefgh",
         title: "Signup mod",

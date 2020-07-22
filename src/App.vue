@@ -2,6 +2,7 @@
   <div id="app-quickstart">
     <el-tabs v-model="activeName" @tab-click="tabChange" type="border-card" v-loading="loading">
       <el-select
+        style="max-width:170px;"
         v-model="selects.projectEid"
         placeholder="Project"
         v-if="projects && projects.length > 0"
@@ -14,6 +15,7 @@
       </small>
       &nbsp;
       <el-select
+        style="max-width:170px;"
         v-model="selects.modEid"
         placeholder="Toolkit"
         v-if="mods && mods.length > 0"
@@ -292,7 +294,7 @@ class UserfrontDemo {
     const styleTag = document.createElement("style");
     styleTag.type = "text/css";
     styleTag.innerHTML = `
-.el-dropdown-menu.el-popper {
+.el-select-dropdown.el-popper {
   position: absolute;
   top: 0;
   left: 0;
@@ -308,11 +310,6 @@ class UserfrontDemo {
   -moz-osx-font-smoothing: grayscale;
   max-width: 170px;
   overflow: hidden;
-}
-.el-dropdown-menu__item {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: pre;
 }`;
     document.head.appendChild(styleTag);
   }

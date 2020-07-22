@@ -4,10 +4,9 @@ import { modId, ModData } from "../anymod/anymod.config.js";
 import {
   Button,
   Card,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
   Loading,
+  Option,
+  Select,
   TabPane,
   Tabs,
 } from "element-ui";
@@ -17,10 +16,9 @@ Vue.config.productionTip = false;
 
 Vue.use(Button);
 Vue.use(Card);
-Vue.use(Dropdown);
-Vue.use(DropdownMenu);
-Vue.use(DropdownItem);
 Vue.use(Loading);
+Vue.use(Option);
+Vue.use(Select);
 Vue.use(TabPane);
 Vue.use(Tabs);
 

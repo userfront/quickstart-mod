@@ -5,6 +5,7 @@
       @tab-click="tabChange"
       type="border-card"
       v-loading="loading"
+      v-show="project"
     >
       <el-select
         style="max-width:170px;"
@@ -13,13 +14,8 @@
         v-if="projects && projects.length > 0"
         @visible-change="addModStyling"
       >
-        <el-option
-          v-for="proj in projects"
-          :key="proj.eid"
-          :value="proj.eid"
-          :label="proj.name"
-        ></el-option> </el-select
-      >&nbsp;
+        <el-option v-for="proj in projects" :key="proj.eid" :value="proj.eid" :label="proj.name"></el-option>
+      </el-select>&nbsp;
       <small>
         <i class="el-icon-arrow-right"></i>
       </small>
@@ -31,13 +27,8 @@
         v-if="mods && mods.length > 0"
         @visible-change="addModStyling"
       >
-        <el-option
-          v-for="mod in mods"
-          :key="mod.eid"
-          :value="mod.eid"
-          :label="mod.displayTitle"
-        ></el-option> </el-select
-      >&nbsp;
+        <el-option v-for="mod in mods" :key="mod.eid" :value="mod.eid" :label="mod.displayTitle"></el-option>
+      </el-select>&nbsp;
       <br />
 
       <!-- HTML -->
@@ -119,7 +110,7 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
 import Cookies from "js-cookie";
 import jwt_decode from "jwt-decode";
 
@@ -132,9 +123,14 @@ hljs.registerLanguage("javascript", hljsJs);
 hljs.registerLanguage("css", hljsCss);
 import "highlight.js/styles/github.css";
 
-const apiUrl = "https://api.userfront.com/v0/";
+// const apiUrl = "https://api.userfront.com/v0/";
 const cookieName = "auth.q68b5qb9";
 const accessJwt = Cookies.get(cookieName);
+
+const demoProject = {
+  eid: "demo1234",
+  name: "Demo project"
+};
 
 export default {
   name: "App",
@@ -145,78 +141,73 @@ export default {
       activeName: "html",
       html: "",
       self: {},
-      demoProject: {
-        eid: "demo1234",
-        name: "Demo project",
-      },
       projects: [],
-      project: {},
+      project: demoProject,
       mods: [],
       mod: {},
       selects: {
         projectEid: "",
-        modEid: "",
+        modEid: ""
       },
-      accessToken: jwt_decode(accessJwt),
+      accessToken: jwt_decode(accessJwt)
     };
   },
   methods: {
-    async setProjects() {
-      this.projects = [this.demoProject];
-      if (!this.accessToken || !this.accessToken.authorization) return;
-      const projects = [];
-      this.accessToken.authorization.map((project) => {
-        if (project.tenantId) {
-          projects.push({
-            eid: project.tenantId,
-            name: project.tenantId,
-          });
-        }
-      });
-      this.projects = projects;
-    },
-    async getMods(projectEid) {
-      if (!projectEid) return;
-      this.loading = true;
-      try {
-        const { data } = await axios.get(
-          `${apiUrl}mods?project=${projectEid}`,
-          {
-            headers: {
-              authorization: `Bearer ${this.authToken}`,
-            },
-          }
-        );
-        this.mods = data.results;
-        if (!this.mod || !this.mod.eid) {
-          this.setMod(this.mods[0]);
-        }
-        this.loading = false;
-      } catch (err) {
-        this.loading = false;
-      }
-    },
-    setMod(mod) {
-      if (!mod || !mod.eid) return;
-      this.mod = mod;
-      this.setSelects();
-      setTimeout(this.highlightCode, 0);
-    },
-    setProject(project) {
-      if (!project || !project.eid) return;
-      this.project = project;
-      this.setSelects();
-      setTimeout(this.highlightCode, 0);
-    },
-    setSelects() {
-      if (this.project && this.project.eid) {
-        this.selects.projectEid = this.project.eid;
-      }
-      if (this.mod && this.mod.eid) {
-        this.selects.modEid = this.mod.eid;
-      }
-    },
-
+    // async setProjects() {
+    //   this.projects = [demoProject];
+    //   if (!this.accessToken || !this.accessToken.authorization) return;
+    //   const projects = [];
+    //   this.accessToken.authorization.map(project => {
+    //     if (project.tenantId) {
+    //       projects.push({
+    //         eid: project.tenantId,
+    //         name: project.tenantId
+    //       });
+    //     }
+    //   });
+    //   this.projects = projects;
+    // },
+    // async getMods(projectEid) {
+    //   if (!projectEid) return;
+    //   this.loading = true;
+    //   try {
+    //     const { data } = await axios.get(
+    //       `${apiUrl}mods?project=${projectEid}`,
+    //       {
+    //         headers: {
+    //           authorization: `Bearer ${this.authToken}`
+    //         }
+    //       }
+    //     );
+    //     this.mods = data.results;
+    //     if (!this.mod || !this.mod.eid) {
+    //       this.setMod(this.mods[0]);
+    //     }
+    //     this.loading = false;
+    //   } catch (err) {
+    //     this.loading = false;
+    //   }
+    // },
+    // setMod(mod) {
+    //   if (!mod || !mod.eid) return;
+    //   this.mod = mod;
+    //   this.setSelects();
+    //   setTimeout(this.highlightCode, 0);
+    // },
+    // setProject(project) {
+    //   if (!project || !project.eid) return;
+    //   this.project = project;
+    //   this.setSelects();
+    //   setTimeout(this.highlightCode, 0);
+    // },
+    // setSelects() {
+    //   if (this.project && this.project.eid) {
+    //     this.selects.projectEid = this.project.eid;
+    //   }
+    //   if (this.mod && this.mod.eid) {
+    //     this.selects.modEid = this.mod.eid;
+    //   }
+    // },
     highlightCode() {
       document
         .querySelectorAll("#app-quickstart pre > code")
@@ -279,39 +270,39 @@ class UserfrontDemo {
     tabChange(tab) {
       console.log("tabChange", tab);
     },
-    async defineSelf(authToken) {
-      this.loading = true;
-      try {
-        const { data } = await axios.get(`${apiUrl}users/self`, {
-          headers: {
-            authorization: `Bearer ${authToken}`,
-          },
-        });
-        this.self = data;
-        this.loading = false;
-      } catch (err) {
-        this.loading = false;
-      }
-    },
+    // async defineSelf(authToken) {
+    //   this.loading = true;
+    //   try {
+    //     const { data } = await axios.get(`${apiUrl}users/self`, {
+    //       headers: {
+    //         authorization: `Bearer ${authToken}`
+    //       }
+    //     });
+    //     this.self = data;
+    //     console.log(data);
+    //     this.loading = false;
+    //   } catch (err) {
+    //     this.loading = false;
+    //   }
+    // },
     // Add the mod key to the menu since it's outside of the mod,
     // so that the mod styling will apply to the menu too.
     addModStyling(isOpening) {
       try {
         if (!isOpening) return;
-        document
-          .querySelectorAll(".el-dropdown-menu.el-popper")
-          .forEach((el) => {
-            el.setAttribute(this.$mod.key, "");
-          });
+        document.querySelectorAll(".el-dropdown-menu.el-popper").forEach(el => {
+          el.setAttribute(this.$mod.key, "");
+        });
       } catch (err) {
         return;
       }
-    },
+    }
   },
   async mounted() {
-    this.setProjects();
-    this.setProject(this.projects[0]);
-    this.getMods(this.project.eid);
+    // await this.defineSelf();
+    // this.setProjects();
+    // this.setProject(this.projects[0]);
+    // this.getMods(this.project.eid);
 
     // Hack to add styles outside of mod
     const styleTag = document.createElement("style");
@@ -335,7 +326,7 @@ class UserfrontDemo {
   overflow: hidden;
 }`;
     document.head.appendChild(styleTag);
-  },
+  }
 };
 </script>
 

@@ -1,11 +1,6 @@
 <template>
   <div id="app-quickstart">
-    <el-tabs
-      v-model="activeName"
-      @tab-click="tabChange"
-      type="border-card"
-      v-loading="loading"
-    >
+    <el-tabs v-model="activeName" @tab-click="tabChange" type="border-card" v-loading="loading">
       <el-select
         style="max-width:170px;"
         v-model="selects.projectEid"
@@ -13,13 +8,8 @@
         v-if="projects && projects.length > 0"
         @visible-change="addModStyling"
       >
-        <el-option
-          v-for="proj in projects"
-          :key="proj.eid"
-          :value="proj.eid"
-          :label="proj.name"
-        ></el-option> </el-select
-      >&nbsp;
+        <el-option v-for="proj in projects" :key="proj.eid" :value="proj.eid" :label="proj.name"></el-option>
+      </el-select>&nbsp;
       <small>
         <i class="el-icon-arrow-right"></i>
       </small>
@@ -31,13 +21,8 @@
         v-if="mods && mods.length > 0"
         @visible-change="addModStyling"
       >
-        <el-option
-          v-for="mod in mods"
-          :key="mod.eid"
-          :value="mod.eid"
-          :label="mod.displayTitle"
-        ></el-option> </el-select
-      >&nbsp;
+        <el-option v-for="mod in mods" :key="mod.eid" :value="mod.eid" :label="mod.displayTitle"></el-option>
+      </el-select>&nbsp;
       <br />
 
       <!-- HTML -->
@@ -134,7 +119,6 @@ import "highlight.js/styles/github.css";
 
 const apiUrl = "https://api.userfront.com/v0/";
 const cookieName = "auth.q68b5qb9";
-const accessJwt = Cookies.get(cookieName);
 
 export default {
   name: "App",
@@ -147,7 +131,7 @@ export default {
       self: {},
       demoProject: {
         eid: "demo1234",
-        name: "Demo project",
+        name: "Demo project"
       },
       projects: [],
       project: {},
@@ -155,21 +139,29 @@ export default {
       mod: {},
       selects: {
         projectEid: "",
-        modEid: "",
-      },
-      accessToken: jwt_decode(accessJwt),
+        modEid: ""
+      }
     };
+  },
+  computed: {
+    accessJwt() {
+      return Cookies.get(cookieName);
+    },
+    accessToken() {
+      if (!this.accessJwt) return;
+      return jwt_decode(this.accessJwt);
+    }
   },
   methods: {
     async setProjects() {
       this.projects = [this.demoProject];
       if (!this.accessToken || !this.accessToken.authorization) return;
       const projects = [];
-      this.accessToken.authorization.map((project) => {
+      this.accessToken.authorization.map(project => {
         if (project.tenantId) {
           projects.push({
             eid: project.tenantId,
-            name: project.tenantId,
+            name: project.tenantId
           });
         }
       });
@@ -183,8 +175,8 @@ export default {
           `${apiUrl}mods?project=${projectEid}`,
           {
             headers: {
-              authorization: `Bearer ${this.authToken}`,
-            },
+              authorization: `Bearer ${this.authToken}`
+            }
           }
         );
         this.mods = data.results;
@@ -284,8 +276,8 @@ class UserfrontDemo {
       try {
         const { data } = await axios.get(`${apiUrl}users/self`, {
           headers: {
-            authorization: `Bearer ${authToken}`,
-          },
+            authorization: `Bearer ${authToken}`
+          }
         });
         this.self = data;
         this.loading = false;
@@ -298,15 +290,13 @@ class UserfrontDemo {
     addModStyling(isOpening) {
       try {
         if (!isOpening) return;
-        document
-          .querySelectorAll(".el-dropdown-menu.el-popper")
-          .forEach((el) => {
-            el.setAttribute(this.$mod.key, "");
-          });
+        document.querySelectorAll(".el-dropdown-menu.el-popper").forEach(el => {
+          el.setAttribute(this.$mod.key, "");
+        });
       } catch (err) {
         return;
       }
-    },
+    }
   },
   async mounted() {
     this.setProjects();
@@ -335,7 +325,7 @@ class UserfrontDemo {
   overflow: hidden;
 }`;
     document.head.appendChild(styleTag);
-  },
+  }
 };
 </script>
 

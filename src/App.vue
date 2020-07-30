@@ -120,6 +120,11 @@ import "highlight.js/styles/github.css";
 const apiUrl = "https://api.userfront.com/v0/";
 const cookieName = "auth.q68b5qb9";
 
+const demoProject = {
+  eid: "demo1234",
+  name: "Demo project"
+};
+
 export default {
   name: "App",
   data() {
@@ -128,13 +133,8 @@ export default {
       loading: false,
       activeName: "html",
       html: "",
-      self: {},
-      demoProject: {
-        eid: "demo1234",
-        name: "Demo project"
-      },
       projects: [],
-      project: {},
+      project: demoProject,
       mods: [],
       mod: {},
       selects: {
@@ -154,14 +154,14 @@ export default {
   },
   methods: {
     async setProjects() {
-      this.projects = [this.demoProject];
+      this.projects = [demoProject];
       if (!this.accessToken || !this.accessToken.authorization) return;
       const projects = [];
       this.accessToken.authorization.map(project => {
         if (project.tenantId) {
           projects.push({
             eid: project.tenantId,
-            name: project.tenantId
+            name: project.name
           });
         }
       });
@@ -175,7 +175,7 @@ export default {
           `${apiUrl}mods?project=${projectEid}`,
           {
             headers: {
-              authorization: `Bearer ${this.authToken}`
+              authorization: `Bearer ${this.accessToken}`
             }
           }
         );
@@ -270,20 +270,6 @@ class UserfrontDemo {
     },
     tabChange(tab) {
       console.log("tabChange", tab);
-    },
-    async defineSelf(authToken) {
-      this.loading = true;
-      try {
-        const { data } = await axios.get(`${apiUrl}users/self`, {
-          headers: {
-            authorization: `Bearer ${authToken}`
-          }
-        });
-        this.self = data;
-        this.loading = false;
-      } catch (err) {
-        this.loading = false;
-      }
     },
     // Add the mod key to the menu since it's outside of the mod,
     // so that the mod styling will apply to the menu too.

@@ -191,7 +191,7 @@ export default {
           `${apiUrl}mods?project=${projectEid}`,
           {
             headers: {
-              authorization: `Bearer ${this.accessJwt}`
+              authorization: `Bearer ${this.accessJwt || "demo"}`
             }
           }
         );
@@ -318,6 +318,23 @@ class UserfrontDemo {
   -moz-osx-font-smoothing: grayscale;
   max-width: 170px;
   overflow: hidden;
+}
+.el-select-dropdown__item {
+  font-size: 14px;
+  padding: 0 20px;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #606266;
+  height: 34px;
+  line-height: 34px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.el-select-dropdown__item.selected {
+  color: #5e72e4;
+  font-weight: bold;
 }`;
     document.head.appendChild(styleTag);
   }

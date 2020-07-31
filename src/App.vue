@@ -1,6 +1,6 @@
 <template>
   <div id="app-quickstart">
-    <el-tabs v-model="activeName" @tab-click="tabChange" type="border-card" v-loading="loading">
+    <el-tabs v-model="activeName" type="border-card" v-loading="loading">
       <el-select
         style="max-width:170px;"
         v-model="selects.projectEid"
@@ -8,7 +8,12 @@
         v-if="projects && projects.length > 0"
         @visible-change="addModStyling"
       >
-        <el-option v-for="proj in projects" :key="proj.eid" :value="proj.eid" :label="proj.name"></el-option>
+        <el-option
+          v-for="proj in projects"
+          :key="proj.tenantId"
+          :value="proj.tenantId"
+          :label="proj.name"
+        ></el-option>
       </el-select>&nbsp;
       <small>
         <i class="el-icon-arrow-right"></i>
@@ -31,7 +36,7 @@
           Paste inside HTML
           <span class="code">&lt;head&gt;</span>:
         </p>
-        <pre><code class="language-html" v-html="scriptHtml(project.eid)"></code></pre>
+        <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
         <br />
         <p>
           Paste inside HTML
@@ -47,7 +52,7 @@
           Paste inside HTML
           <span class="code">&lt;head&gt;</span>:
         </p>
-        <pre><code class="language-html" v-html="scriptHtml(project.eid)"></code></pre>
+        <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
         <br />
         <p>
           Add
@@ -64,7 +69,7 @@
           Paste inside HTML
           <span class="code">&lt;head&gt;</span>:
         </p>
-        <pre><code class="language-html" v-html="scriptHtml(project.eid)"></code></pre>
+        <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
         <br />
         <p>Add the div inside your app HTML:</p>
         <pre><code class="language-html" v-html="modVueHtml(mod)"></code></pre>
@@ -82,7 +87,7 @@
           Paste inside HTML
           <span class="code">&lt;head&gt;</span>:
         </p>
-        <pre><code class="language-html" v-html="scriptHtml(project.eid)"></code></pre>
+        <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
         <br />
         <p>
           Make
@@ -117,11 +122,13 @@ hljs.registerLanguage("javascript", hljsJs);
 hljs.registerLanguage("css", hljsCss);
 import "highlight.js/styles/github.css";
 
-const apiUrl = "https://api.userfront.com/v0/";
-const cookieName = "auth.q68b5qb9";
+const isProduction = process.env.NODE_ENV === "production";
+const baseDomain = isProduction ? "api.userfront.com" : "localhost:5001";
+const apiUrl = `http${isProduction ? "s" : ""}://${baseDomain}/v0/`;
+const cookieName = "access.q68b5qb9";
 
 const demoProject = {
-  eid: "demo1234",
+  tenantId: "demo1234",
   name: "Demo project"
 };
 
@@ -133,7 +140,6 @@ export default {
       loading: false,
       activeName: "html",
       html: "",
-      projects: [],
       project: demoProject,
       mods: [],
       mod: {},
@@ -150,23 +156,33 @@ export default {
     accessToken() {
       if (!this.accessJwt) return;
       return jwt_decode(this.accessJwt);
-    }
-  },
-  methods: {
-    async setProjects() {
-      this.projects = [demoProject];
-      if (!this.accessToken || !this.accessToken.authorization) return;
+    },
+    projects() {
+      if (!this.accessToken) return [demoProject];
       const projects = [];
       this.accessToken.authorization.map(project => {
         if (project.tenantId) {
           projects.push({
-            eid: project.tenantId,
+            tenantId: project.tenantId,
             name: project.name
           });
         }
       });
-      this.projects = projects;
+      if (projects.length === 0) return [demoProject];
+      return projects;
+    }
+  },
+  watch: {
+    "selects.projectEid": function(newEid, oldEid) {
+      if (!newEid || newEid === oldEid) return;
+      this.getMods(newEid);
     },
+    "selects.modEid": function(newEid, oldEid) {
+      if (!newEid || newEid === oldEid) return;
+      this.setMod(newEid);
+    }
+  },
+  methods: {
     async getMods(projectEid) {
       if (!projectEid) return;
       this.loading = true;
@@ -175,74 +191,71 @@ export default {
           `${apiUrl}mods?project=${projectEid}`,
           {
             headers: {
-              authorization: `Bearer ${this.accessToken}`
+              authorization: `Bearer ${this.accessJwt}`
             }
           }
         );
         this.mods = data.results;
-        if (!this.mod || !this.mod.eid) {
-          this.setMod(this.mods[0]);
+        this.mod = {};
+        if (this.mods.length > 0) {
+          this.setMod(this.mods[0].eid);
         }
         this.loading = false;
       } catch (err) {
         this.loading = false;
       }
     },
-    setMod(mod) {
-      if (!mod || !mod.eid) return;
-      this.mod = mod;
-      this.setSelects();
-      setTimeout(this.highlightCode, 0);
-    },
     setProject(project) {
-      if (!project || !project.eid) return;
+      if (!project || !project.tenantId) return;
       this.project = project;
-      this.setSelects();
+      this.selects.projectEid = this.project.tenantId;
       setTimeout(this.highlightCode, 0);
     },
-    setSelects() {
-      if (this.project && this.project.eid) {
-        this.selects.projectEid = this.project.eid;
-      }
-      if (this.mod && this.mod.eid) {
-        this.selects.modEid = this.mod.eid;
-      }
+    setMod(eid) {
+      if (!eid) return;
+      this.mods.map(mod => {
+        if (mod.eid === eid) {
+          this.mod = mod;
+          this.selects.modEid = this.mod.eid;
+          setTimeout(this.highlightCode, 0);
+        }
+      });
     },
-
     highlightCode() {
       document
         .querySelectorAll("#app-quickstart pre > code")
         .forEach(hljs.highlightBlock);
     },
-    scriptHtml(eid) {
+    scriptHtml() {
+      if (!this.selects.projectEid) return;
       const scr = `&lt;script id="Userfront-script"&gt;
   (function(m,o,d,u,l,a,r,i,z,e) {
     u[m]={rq:[],ready:function(j){u[m].rq.push(j);},m:m,o:o,d:d,r:r};function j(s){return encodeURIComponent(btoa(s));}z=l.getElementById(m+"-"+a);r=u.location;
     e=[d+"/page/"+o+"/"+j(r.pathname)+"/"+j(r.host)+"?t="+Date.now(),d];e.map(function(w){i=l.createElement(a);i.defer=1;i.src=w;z.parentNode.insertBefore(i,z);});u.amvartem=m;
-  })("Userfront", "${eid}", "https://mod.userfront.com/v2",window,document,"script");
+  })("Userfront", "${this.selects.projectEid}", "https://mod.userfront.com/v2",window,document,"script");
 &lt;/script&gt;`;
       return scr;
     },
-    modHtml({ eid, title }) {
+    modHtml({ eid, displayTitle }) {
       let tag = `&lt;div id="userfront-${eid}"&gt;&lt;/div&gt;`;
-      if (title) tag = `&lt;!-- ${title} --&gt;\n${tag}`;
+      if (displayTitle) tag = `&lt;!-- ${displayTitle} --&gt;\n${tag}`;
       return tag;
     },
-    modReact({ eid, title }) {
+    modReact({ eid, displayTitle }) {
       return `class Demo extends React.Component {
   componentDidMount () {
     Userfront.render()
   }
   render () {
-    // ${title}
+    // ${displayTitle}
     return &lt;div id="userfront-${eid}"&gt;&lt;/div&gt;
   }
 }`;
     },
-    modVueHtml({ eid, title }) {
+    modVueHtml({ eid, displayTitle }) {
       return `&lt;div id="app"&gt;
 
-  // ${title}
+  &lt;!-- ${displayTitle} --&gt;
   &lt;div id="userfront-${eid}"&gt;&lt;/div&gt;
 
 &lt;/div&gt;`;
@@ -268,9 +281,6 @@ class UserfrontDemo {
   }
 }`;
     },
-    tabChange(tab) {
-      console.log("tabChange", tab);
-    },
     // Add the mod key to the menu since it's outside of the mod,
     // so that the mod styling will apply to the menu too.
     addModStyling(isOpening) {
@@ -285,9 +295,8 @@ class UserfrontDemo {
     }
   },
   async mounted() {
-    this.setProjects();
     this.setProject(this.projects[0]);
-    this.getMods(this.project.eid);
+    this.getMods(this.project.tenantId);
 
     // Hack to add styles outside of mod
     const styleTag = document.createElement("style");

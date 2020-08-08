@@ -1,46 +1,57 @@
 <template>
   <div id="app-quickstart">
     <el-tabs v-model="activeName" type="border-card" v-loading="loading">
-      <el-select
-        style="max-width:170px;"
-        v-model="selects.projectEid"
-        placeholder="Project"
-        v-if="projects && projects.length > 0"
-        @visible-change="addModStyling"
-      >
-        <el-option
-          v-for="proj in projects"
-          :key="proj.tenantId"
-          :value="proj.tenantId"
-          :label="proj.name"
-        ></el-option>
-      </el-select>&nbsp;
-      <small>
-        <i class="el-icon-arrow-right"></i>
-      </small>
-      &nbsp;
-      <el-select
-        style="max-width:170px;"
-        v-model="selects.modEid"
-        placeholder="Toolkit"
-        v-if="mods && mods.length > 0"
-        @visible-change="addModStyling"
-      >
-        <el-option v-for="mod in mods" :key="mod.eid" :value="mod.eid" :label="mod.displayTitle"></el-option>
-      </el-select>&nbsp;
-      <br />
+      <el-dropdown trigger="click" @command="setProject">
+        <span class="el-dropdown-link">
+          {{ project.name }}&nbsp;<i
+            class="el-icon-arrow-down el-icon--right"
+          ></i>
+        </span>
+        &nbsp;&nbsp;
+        <el-badge :value="project.tenantId" type="info"></el-badge>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item
+            v-for="proj in projects"
+            :key="proj.tenantId"
+            :command="proj"
+          >
+            {{ proj.name }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+      <p>
+        Paste this script inside your HTML
+        <span class="code">&lt;head&gt;</span> & above any other scripts.
+      </p>
+      <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
+
+      <hr style="margin:20px 0;" />
+
+      <el-dropdown trigger="click" @command="setMod">
+        <span class="el-dropdown-link">
+          {{ mod.displayTitle }}&nbsp;<i
+            class="el-icon-arrow-down el-icon--right"
+          ></i>
+        </span>
+        <el-badge :value="mod.eid" type="info"></el-badge>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item
+            v-for="mod in mods"
+            :key="mod.eid"
+            :command="mod.eid"
+          >
+            {{ mod.displayTitle }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
 
       <!-- HTML -->
       <el-tab-pane label="HTML" name="html">
         <p>
-          Paste inside HTML
-          <span class="code">&lt;head&gt;</span>:
-        </p>
-        <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
-        <br />
-        <p>
-          Paste inside HTML
-          <span class="code">&lt;body&gt;</span>:
+          Paste this div inside your HTML
+          <span class="code">&lt;body&gt;</span> wherever you want the
+          {{ mod.displayTitle }} to show:
         </p>
         <pre><code class="language-html" v-html="modHtml(mod)"></code></pre>
       </el-tab-pane>
@@ -49,15 +60,9 @@
       <!-- React -->
       <el-tab-pane label="React" name="react">
         <p>
-          Paste inside HTML
-          <span class="code">&lt;head&gt;</span>:
-        </p>
-        <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
-        <br />
-        <p>
-          Add
-          <span class="code">div</span> and
-          <span class="code">Userfront.render()</span>:
+          Add the
+          <span class="code">div</span> in your render code, and call
+          <span class="code">Userfront.render()</span>.
         </p>
         <pre><code class="language-javascript" v-html="modReact(mod)"></code></pre>
       </el-tab-pane>
@@ -65,17 +70,12 @@
 
       <!-- Vue -->
       <el-tab-pane label="Vue" name="vue">
-        <p>
-          Paste inside HTML
-          <span class="code">&lt;head&gt;</span>:
-        </p>
-        <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
-        <br />
-        <p>Add the div inside your app HTML:</p>
+        <p>Add the <span class="code">div</span> inside your Vue app:</p>
         <pre><code class="language-html" v-html="modVueHtml(mod)"></code></pre>
         <p>
           Call
-          <span class="code">Userfront.render()</span> in JS:
+          <span class="code">Userfront.render()</span> once your component has
+          mounted:
         </p>
         <pre><code class="language-javascript" v-html="modVueJs()"></code></pre>
       </el-tab-pane>
@@ -83,12 +83,6 @@
 
       <!-- Angular -->
       <el-tab-pane label="Angular" name="angular">
-        <p>
-          Paste inside HTML
-          <span class="code">&lt;head&gt;</span>:
-        </p>
-        <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
-        <br />
         <p>
           Make
           <span class="code">Userfront</span> available in your
@@ -129,7 +123,7 @@ const cookieName = "access.q68b5qb9";
 
 const demoProject = {
   tenantId: "demo1234",
-  name: "Demo project"
+  name: "Demo project",
 };
 
 export default {
@@ -145,8 +139,8 @@ export default {
       mod: {},
       selects: {
         projectEid: "",
-        modEid: ""
-      }
+        modEid: "",
+      },
     };
   },
   computed: {
@@ -160,17 +154,17 @@ export default {
     projects() {
       if (!this.accessToken) return [demoProject];
       const projects = [];
-      this.accessToken.authorization.map(project => {
+      this.accessToken.authorization.map((project) => {
         if (project.tenantId) {
           projects.push({
             tenantId: project.tenantId,
-            name: project.name
+            name: project.name,
           });
         }
       });
       if (projects.length === 0) return [demoProject];
       return projects;
-    }
+    },
   },
   watch: {
     "selects.projectEid": function(newEid, oldEid) {
@@ -180,7 +174,7 @@ export default {
     "selects.modEid": function(newEid, oldEid) {
       if (!newEid || newEid === oldEid) return;
       this.setMod(newEid);
-    }
+    },
   },
   methods: {
     async getMods(projectEid) {
@@ -191,8 +185,8 @@ export default {
           `${apiUrl}mods?project=${projectEid}`,
           {
             headers: {
-              authorization: `Bearer ${this.accessJwt || "demo"}`
-            }
+              authorization: `Bearer ${this.accessJwt || "demo"}`,
+            },
           }
         );
         this.mods = data.results;
@@ -206,6 +200,7 @@ export default {
       }
     },
     setProject(project) {
+      console.log(project);
       if (!project || !project.tenantId) return;
       this.project = project;
       this.selects.projectEid = this.project.tenantId;
@@ -213,7 +208,7 @@ export default {
     },
     setMod(eid) {
       if (!eid) return;
-      this.mods.map(mod => {
+      this.mods.map((mod) => {
         if (mod.eid === eid) {
           this.mod = mod;
           this.selects.modEid = this.mod.eid;
@@ -286,13 +281,15 @@ class UserfrontDemo {
     addModStyling(isOpening) {
       try {
         if (!isOpening) return;
-        document.querySelectorAll(".el-dropdown-menu.el-popper").forEach(el => {
-          el.setAttribute(this.$mod.key, "");
-        });
+        document
+          .querySelectorAll(".el-dropdown-menu.el-popper")
+          .forEach((el) => {
+            el.setAttribute(this.$mod.key, "");
+          });
       } catch (err) {
         return;
       }
-    }
+    },
   },
   async mounted() {
     this.setProject(this.projects[0]);
@@ -335,9 +332,12 @@ class UserfrontDemo {
 .el-select-dropdown__item.selected {
   color: #5e72e4;
   font-weight: bold;
+}
+el-select-dropdown__list {
+  padding: 0;
 }`;
     document.head.appendChild(styleTag);
-  }
+  },
 };
 </script>
 
@@ -347,7 +347,7 @@ class UserfrontDemo {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  max-width: 420px;
+  max-width: 580px;
   color: #2c3e50;
   /deep/ h2 {
     font-size: 1.5em;
@@ -357,6 +357,13 @@ class UserfrontDemo {
     display: inline-block;
     padding: 1px 3px;
     margin: 0 2px;
+  }
+  .el-dropdown-link {
+    font-size: 18px;
+    font-weight: bold;
+    color: #5e72e4;
+    margin-right: 12px;
+    cursor: pointer;
   }
 }
 </style>

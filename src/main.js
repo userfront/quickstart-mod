@@ -2,8 +2,12 @@ import Vue from "vue";
 import App from "./App.vue";
 import { modId, ModData } from "../anymod/anymod.config.js";
 import {
+  Badge,
   Button,
   Card,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
   Loading,
   Option,
   Select,
@@ -14,8 +18,12 @@ import "./styles/element-variables.scss";
 
 Vue.config.productionTip = false;
 
+Vue.use(Badge);
 Vue.use(Button);
 Vue.use(Card);
+Vue.use(Dropdown);
+Vue.use(DropdownMenu);
+Vue.use(DropdownItem);
 Vue.use(Loading);
 Vue.use(Option);
 Vue.use(Select);

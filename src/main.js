@@ -9,8 +9,6 @@ import {
   DropdownMenu,
   DropdownItem,
   Loading,
-  Option,
-  Select,
   TabPane,
   Tabs,
 } from "element-ui";
@@ -25,8 +23,6 @@ Vue.use(Dropdown);
 Vue.use(DropdownMenu);
 Vue.use(DropdownItem);
 Vue.use(Loading);
-Vue.use(Option);
-Vue.use(Select);
 Vue.use(TabPane);
 Vue.use(Tabs);
 

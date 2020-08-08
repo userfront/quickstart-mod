@@ -137,10 +137,6 @@ export default {
       project: demoProject,
       mods: [],
       mod: {},
-      selects: {
-        projectEid: "",
-        modEid: "",
-      },
     };
   },
   computed: {
@@ -167,13 +163,14 @@ export default {
     },
   },
   watch: {
-    "selects.projectEid": function(newEid, oldEid) {
-      if (!newEid || newEid === oldEid) return;
-      this.getMods(newEid);
-    },
-    "selects.modEid": function(newEid, oldEid) {
-      if (!newEid || newEid === oldEid) return;
-      this.setMod(newEid);
+    project(newProject, oldProject) {
+      if (
+        !newProject ||
+        !newProject.tenantId ||
+        newProject.tenantId === (oldProject && oldProject.tenantId)
+      )
+        return;
+      this.getMods(newProject.tenantId);
     },
   },
   methods: {
@@ -200,10 +197,8 @@ export default {
       }
     },
     setProject(project) {
-      console.log(project);
       if (!project || !project.tenantId) return;
       this.project = project;
-      this.selects.projectEid = this.project.tenantId;
       setTimeout(this.highlightCode, 0);
     },
     setMod(eid) {
@@ -211,7 +206,6 @@ export default {
       this.mods.map((mod) => {
         if (mod.eid === eid) {
           this.mod = mod;
-          this.selects.modEid = this.mod.eid;
           setTimeout(this.highlightCode, 0);
         }
       });
@@ -222,12 +216,12 @@ export default {
         .forEach(hljs.highlightBlock);
     },
     scriptHtml() {
-      if (!this.selects.projectEid) return;
+      if (!this.project || !this.project.tenantId) return;
       const scr = `&lt;script id="Userfront-script"&gt;
   (function(m,o,d,u,l,a,r,i,z,e) {
     u[m]={rq:[],ready:function(j){u[m].rq.push(j);},m:m,o:o,d:d,r:r};function j(s){return encodeURIComponent(btoa(s));}z=l.getElementById(m+"-"+a);r=u.location;
     e=[d+"/page/"+o+"/"+j(r.pathname)+"/"+j(r.host)+"?t="+Date.now(),d];e.map(function(w){i=l.createElement(a);i.defer=1;i.src=w;z.parentNode.insertBefore(i,z);});u.amvartem=m;
-  })("Userfront", "${this.selects.projectEid}", "https://mod.userfront.com/v2",window,document,"script");
+  })("Userfront", "${this.project.tenantId}", "https://mod.userfront.com/v2",window,document,"script");
 &lt;/script&gt;`;
       return scr;
     },
@@ -299,7 +293,7 @@ class UserfrontDemo {
     const styleTag = document.createElement("style");
     styleTag.type = "text/css";
     styleTag.innerHTML = `
-.el-select-dropdown.el-popper {
+.el-dropdown-menu.el-popper {
   position: absolute;
   top: 0;
   left: 0;
@@ -316,7 +310,7 @@ class UserfrontDemo {
   max-width: 170px;
   overflow: hidden;
 }
-.el-select-dropdown__item {
+.el-dropdown-menu__item {
   font-size: 14px;
   padding: 0 20px;
   position: relative;
@@ -329,11 +323,7 @@ class UserfrontDemo {
   box-sizing: border-box;
   cursor: pointer;
 }
-.el-select-dropdown__item.selected {
-  color: #5e72e4;
-  font-weight: bold;
-}
-el-select-dropdown__list {
+el-dropdown-menu__list {
   padding: 0;
 }`;
     document.head.appendChild(styleTag);

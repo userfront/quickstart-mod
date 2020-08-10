@@ -1,14 +1,16 @@
 <template>
   <div id="app-quickstart">
     <el-tabs v-model="activeName" type="border-card" v-loading="loading">
-      <el-dropdown trigger="click" @command="setProject">
+      <el-dropdown
+        trigger="click"
+        @command="setProject"
+        placement="bottom-start"
+      >
         <span class="el-dropdown-link">
           {{ project.name }}&nbsp;<i
             class="el-icon-arrow-down el-icon--right"
           ></i>
         </span>
-        &nbsp;&nbsp;
-        <el-badge :value="project.tenantId" type="info"></el-badge>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
             v-for="proj in projects"
@@ -19,6 +21,7 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+      <el-badge :value="project.tenantId" type="info"></el-badge>
 
       <p>
         Paste this script inside your HTML
@@ -26,18 +29,17 @@
       </p>
       <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
 
-      <hr style="margin:20px 0;" />
+      <br />
 
-      <el-dropdown trigger="click" @command="setMod">
+      <el-dropdown trigger="click" @command="setMod" placement="bottom-start">
         <span class="el-dropdown-link">
           {{ mod.displayTitle }}&nbsp;<i
             class="el-icon-arrow-down el-icon--right"
           ></i>
         </span>
-        <el-badge :value="mod.eid" type="info"></el-badge>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
-            v-for="mod in mods"
+            v-for="mod in orderedMods"
             :key="mod.eid"
             :command="mod.eid"
           >
@@ -45,6 +47,7 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+      <el-badge :value="mod.eid" type="info"></el-badge>
 
       <!-- HTML -->
       <el-tab-pane label="HTML" name="html">
@@ -160,6 +163,22 @@ export default {
       });
       if (projects.length === 0) return [demoProject];
       return projects;
+    },
+    orderedMods() {
+      const order = [/signup/i, /login/i, /reset/i, /logout/i];
+      function matchOrder(str) {
+        if (!str) return;
+        for (let i = 0; i < order.length; i++) {
+          if (str.match(order[i])) return i;
+        }
+      }
+      const ordered = JSON.parse(JSON.stringify(this.mods));
+      ordered.sort((a, b) => {
+        const matchA = matchOrder(a.displayTitle);
+        const matchB = matchOrder(b.displayTitle);
+        return matchA - matchB;
+      });
+      return ordered;
     },
   },
   watch: {
@@ -354,6 +373,10 @@ el-dropdown-menu__list {
     color: #5e72e4;
     margin-right: 12px;
     cursor: pointer;
+  }
+  /deep/ .el-badge__content {
+    font-family: monospace;
+    font-size: 13px;
   }
 }
 </style>

@@ -1,24 +1,17 @@
 <template>
   <div id="app-quickstart">
     <el-tabs v-model="activeName" type="border-card" v-loading="loading">
-      <el-dropdown
-        trigger="click"
-        @command="setProject"
-        placement="bottom-start"
-      >
+      <el-dropdown trigger="click" @command="setProject" placement="bottom-start">
         <span class="el-dropdown-link">
-          {{ project.name }}&nbsp;<i
-            class="el-icon-arrow-down el-icon--right"
-          ></i>
+          {{ project.name }}&nbsp;
+          <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
             v-for="proj in projects"
             :key="proj.tenantId"
             :command="proj"
-          >
-            {{ proj.name }}
-          </el-dropdown-item>
+          >{{ proj.name }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <el-badge :value="project.tenantId" type="info"></el-badge>
@@ -33,18 +26,15 @@
 
       <el-dropdown trigger="click" @command="setMod" placement="bottom-start">
         <span class="el-dropdown-link">
-          {{ mod.displayTitle }}&nbsp;<i
-            class="el-icon-arrow-down el-icon--right"
-          ></i>
+          {{ mod.displayTitle }}&nbsp;
+          <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
             v-for="mod in orderedMods"
             :key="mod.eid"
             :command="mod.eid"
-          >
-            {{ mod.displayTitle }}
-          </el-dropdown-item>
+          >{{ mod.displayTitle }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <el-badge :value="mod.eid" type="info"></el-badge>
@@ -53,7 +43,8 @@
       <el-tab-pane label="HTML" name="html">
         <p>
           Paste this div inside your HTML
-          <span class="code">&lt;body&gt;</span> wherever you want the
+          <span class="code">&lt;body&gt;</span>
+          wherever you want the
           {{ mod.displayTitle }} to show:
         </p>
         <pre><code class="language-html" v-html="modHtml(mod)"></code></pre>
@@ -73,7 +64,10 @@
 
       <!-- Vue -->
       <el-tab-pane label="Vue" name="vue">
-        <p>Add the <span class="code">div</span> inside your Vue app:</p>
+        <p>
+          Add the
+          <span class="code">div</span> inside your Vue app:
+        </p>
         <pre><code class="language-html" v-html="modVueHtml(mod)"></code></pre>
         <p>
           Call
@@ -126,7 +120,7 @@ const cookieName = "access.q68b5qb9";
 
 const demoProject = {
   tenantId: "demo1234",
-  name: "Demo project",
+  name: "Demo project"
 };
 
 export default {
@@ -139,25 +133,25 @@ export default {
       html: "",
       project: demoProject,
       mods: [],
-      mod: {},
+      mod: {}
     };
   },
   computed: {
     accessJwt() {
       return Cookies.get(cookieName);
     },
-    accessToken() {
+    decodedAccessToken() {
       if (!this.accessJwt) return;
       return jwt_decode(this.accessJwt);
     },
     projects() {
-      if (!this.accessToken) return [demoProject];
+      if (!this.decodedAccessToken) return [demoProject];
       const projects = [];
-      this.accessToken.authorization.map((project) => {
+      this.decodedAccessToken.authorization.map(project => {
         if (project.tenantId) {
           projects.push({
             tenantId: project.tenantId,
-            name: project.name,
+            name: project.name
           });
         }
       });
@@ -179,7 +173,7 @@ export default {
         return matchA - matchB;
       });
       return ordered;
-    },
+    }
   },
   watch: {
     project(newProject, oldProject) {
@@ -190,7 +184,7 @@ export default {
       )
         return;
       this.getMods(newProject.tenantId);
-    },
+    }
   },
   methods: {
     async getMods(projectEid) {
@@ -201,8 +195,8 @@ export default {
           `${apiUrl}mods?project=${projectEid}`,
           {
             headers: {
-              authorization: `Bearer ${this.accessJwt || "demo"}`,
-            },
+              authorization: `Bearer ${this.accessJwt || "demo"}`
+            }
           }
         );
         this.mods = data.results;
@@ -222,7 +216,7 @@ export default {
     },
     setMod(eid) {
       if (!eid) return;
-      this.mods.map((mod) => {
+      this.mods.map(mod => {
         if (mod.eid === eid) {
           this.mod = mod;
           setTimeout(this.highlightCode, 0);
@@ -294,15 +288,13 @@ class UserfrontDemo {
     addModStyling(isOpening) {
       try {
         if (!isOpening) return;
-        document
-          .querySelectorAll(".el-dropdown-menu.el-popper")
-          .forEach((el) => {
-            el.setAttribute(this.$mod.key, "");
-          });
+        document.querySelectorAll(".el-dropdown-menu.el-popper").forEach(el => {
+          el.setAttribute(this.$mod.key, "");
+        });
       } catch (err) {
         return;
       }
-    },
+    }
   },
   async mounted() {
     this.setProject(this.projects[0]);
@@ -346,7 +338,7 @@ el-dropdown-menu__list {
   padding: 0;
 }`;
     document.head.appendChild(styleTag);
-  },
+  }
 };
 </script>
 

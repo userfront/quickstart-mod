@@ -95,6 +95,13 @@
         <pre><code class="language-javascript" v-html="modAngular(mod)"></code></pre>
       </el-tab-pane>
       <!-- /Angular -->
+
+      <img
+        v-if="mod.previewImageManual"
+        :src="mod.previewImageManual"
+        :alt="mod.displayTitle"
+        style="max-width:100%;height:auto;margin:20px 0 0;"
+      />
     </el-tabs>
   </div>
 </template>
@@ -202,7 +209,7 @@ export default {
         this.mods = data.results;
         this.mod = {};
         if (this.mods.length > 0) {
-          this.setMod(this.mods[0].eid);
+          this.setMod(this.orderedMods[0].eid);
         }
         this.loading = false;
       } catch (err) {

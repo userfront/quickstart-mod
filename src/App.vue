@@ -48,6 +48,15 @@
           {{ mod.displayTitle }} to show:
         </p>
         <pre><code class="language-html" v-html="modHtml(mod)"></code></pre>
+
+        <div>
+          See an
+          <a
+            href="https://codesandbox.io/s/userfront-html-example-r06ky?file=/index.html"
+            target="_blank"
+            class="color-purple"
+          >example</a>.
+        </div>
       </el-tab-pane>
       <!-- /HTML -->
 
@@ -59,6 +68,15 @@
           <span class="code">Userfront.render()</span>.
         </p>
         <pre><code class="language-javascript" v-html="modReact(mod)"></code></pre>
+
+        <div>
+          See a
+          <a
+            href="https://codesandbox.io/s/userfront-react-example-rhbyl"
+            target="_blank"
+            class="color-purple"
+          >React example</a>.
+        </div>
       </el-tab-pane>
       <!-- /React -->
 
@@ -75,6 +93,15 @@
           mounted:
         </p>
         <pre><code class="language-javascript" v-html="modVueJs()"></code></pre>
+
+        <div>
+          See a
+          <a
+            href="https://codesandbox.io/s/userfront-vue-example-hxuuw"
+            target="_blank"
+            class="color-purple"
+          >Vue example</a>.
+        </div>
       </el-tab-pane>
       <!-- /Vue -->
 
@@ -93,6 +120,15 @@
         </p>
 
         <pre><code class="language-javascript" v-html="modAngular(mod)"></code></pre>
+
+        <div>
+          See an
+          <a
+            href="https://codesandbox.io/s/userfront-angular-example-wrwn9?file=/src/app/app.component.ts"
+            target="_blank"
+            class="color-purple"
+          >Angular example</a>.
+        </div>
       </el-tab-pane>
       <!-- /Angular -->
 
@@ -365,6 +401,12 @@ el-dropdown-menu__list {
     display: inline-block;
     padding: 1px 3px;
     margin: 0 2px;
+  }
+  pre > code {
+    font-size: 14px;
+  }
+  .color-purple {
+    color: #5e72e4;
   }
   .el-dropdown-link {
     font-size: 18px;

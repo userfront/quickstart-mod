@@ -24,120 +24,114 @@
 
       <br />
 
-      <el-dropdown trigger="click" @command="setMod" placement="bottom-start">
-        <span class="el-dropdown-link">
-          {{ mod.displayTitle }}&nbsp;
-          <i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item
-            v-for="mod in orderedMods"
-            :key="mod.eid"
-            :command="mod.eid"
-          >{{ mod.displayTitle }}</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-badge :value="mod.eid" type="info"></el-badge>
+      <div v-if="mod.eid">
+        <el-dropdown trigger="click" @command="setMod" placement="bottom-start">
+          <span class="el-dropdown-link">
+            {{ mod.displayTitle }}&nbsp;
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item
+              v-for="mod in orderedMods"
+              :key="mod.eid"
+              :command="mod.eid"
+            >{{ mod.displayTitle }}</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <el-badge :value="mod.eid" type="info"></el-badge>
 
-      <!-- HTML -->
-      <el-tab-pane label="HTML" name="html">
-        <p>
-          Paste this div inside your HTML
-          <span class="code">&lt;body&gt;</span>
-          wherever you want the
-          {{ mod.displayTitle }} to show:
-        </p>
-        <code-block :content="modHtml(mod)" language="html"></code-block>
+        <!-- HTML -->
+        <el-tab-pane label="HTML" name="html">
+          <p>
+            Paste this div inside your HTML
+            <span class="code">&lt;body&gt;</span>
+            wherever you want the
+            {{ mod.displayTitle }} to show:
+          </p>
+          <code-block
+            :content="modHtml(mod)"
+            language="html"
+            example="https://codesandbox.io/s/userfront-html-example-r06ky?file=/index.html"
+          ></code-block>
+        </el-tab-pane>
+        <!-- /HTML -->
 
-        <div>
-          See an
-          <a
-            href="https://codesandbox.io/s/userfront-html-example-r06ky?file=/index.html"
-            target="_blank"
-            class="color-purple"
-          >example</a>.
+        <!-- React -->
+        <el-tab-pane label="React" name="react">
+          <p>
+            Add the
+            <span class="code">div</span> in your render code, and call
+            <span class="code">Userfront.render()</span>.
+          </p>
+          <code-block
+            :content="modReact(mod)"
+            language="javascript"
+            example="https://codesandbox.io/s/userfront-react-example-rhbyl"
+          ></code-block>
+        </el-tab-pane>
+        <!-- /React -->
+
+        <!-- Vue -->
+        <el-tab-pane label="Vue" name="vue">
+          <p>
+            Add the
+            <span class="code">div</span> inside your Vue app:
+          </p>
+          <code-block
+            :content="modVueHtml(mod)"
+            language="html"
+            example="https://codesandbox.io/s/userfront-vue-example-hxuuw"
+          ></code-block>
+
+          <p>
+            Call
+            <span class="code">Userfront.render()</span> once your component has
+            mounted:
+          </p>
+          <code-block
+            :content="modVueJs()"
+            language="javascript"
+            example="https://codesandbox.io/s/userfront-vue-example-hxuuw"
+          ></code-block>
+        </el-tab-pane>
+        <!-- /Vue -->
+
+        <!-- Angular -->
+        <el-tab-pane label="Angular" name="angular">
+          <p>
+            Make
+            <span class="code">Userfront</span> available in your
+            <span class="code">.ts</span> file:
+          </p>
+          <code-block
+            :content="'declare var Userfront: any;'"
+            example="https://codesandbox.io/s/userfront-angular-example-wrwn9?file=/src/app/app.component.ts"
+            language="javascript"
+          ></code-block>
+          <p>
+            Call
+            <span class="code">Userfront.render()</span> in your component:
+          </p>
+
+          <code-block
+            :content="modAngular(mod)"
+            language="javascript"
+            example="https://codesandbox.io/s/userfront-angular-example-wrwn9?file=/src/app/app.component.ts"
+          ></code-block>
+        </el-tab-pane>
+        <!-- /Angular -->
+
+        <div v-if="mod.previewImageManual">
+          Result:
+          <div style="width:100%;text-align:center;">
+            <img
+              :src="mod.previewImageManual"
+              :alt="mod.displayTitle"
+              style="max-width:100%;height:auto;margin:20px 0 0;"
+            />
+          </div>
         </div>
-      </el-tab-pane>
-      <!-- /HTML -->
-
-      <!-- React -->
-      <el-tab-pane label="React" name="react">
-        <p>
-          Add the
-          <span class="code">div</span> in your render code, and call
-          <span class="code">Userfront.render()</span>.
-        </p>
-        <code-block :content="modReact(mod)" language="javascript"></code-block>
-
-        <div>
-          See a
-          <a
-            href="https://codesandbox.io/s/userfront-react-example-rhbyl"
-            target="_blank"
-            class="color-purple"
-          >React example</a>.
-        </div>
-      </el-tab-pane>
-      <!-- /React -->
-
-      <!-- Vue -->
-      <el-tab-pane label="Vue" name="vue">
-        <p>
-          Add the
-          <span class="code">div</span> inside your Vue app:
-        </p>
-        <code-block :content="modVueHtml(mod)" language="html"></code-block>
-
-        <p>
-          Call
-          <span class="code">Userfront.render()</span> once your component has
-          mounted:
-        </p>
-        <code-block :content="modVueJs()" language="javascript"></code-block>
-
-        <div>
-          See a
-          <a
-            href="https://codesandbox.io/s/userfront-vue-example-hxuuw"
-            target="_blank"
-            class="color-purple"
-          >Vue example</a>.
-        </div>
-      </el-tab-pane>
-      <!-- /Vue -->
-
-      <!-- Angular -->
-      <el-tab-pane label="Angular" name="angular">
-        <p>
-          Make
-          <span class="code">Userfront</span> available in your
-          <span class="code">.ts</span> file:
-        </p>
-        <code-block :content="'declare var Userfront: any;'" language="javascript"></code-block>
-        <p>
-          Call
-          <span class="code">Userfront.render()</span> in your component:
-        </p>
-
-        <code-block :content="modAngular(mod)" language="javascript"></code-block>
-
-        <div>
-          See an
-          <a
-            href="https://codesandbox.io/s/userfront-angular-example-wrwn9?file=/src/app/app.component.ts"
-            target="_blank"
-            class="color-purple"
-          >Angular example</a>.
-        </div>
-      </el-tab-pane>
-      <!-- /Angular -->
-
-      <img
-        v-if="mod.previewImageManual"
-        :src="mod.previewImageManual"
-        :alt="mod.displayTitle"
-        style="max-width:100%;height:auto;margin:20px 0 0;"
-      />
+      </div>
     </el-tabs>
   </div>
 </template>
@@ -201,6 +195,7 @@ export default {
         for (let i = 0; i < order.length; i++) {
           if (str.match(order[i])) return i;
         }
+        return 100;
       }
       const ordered = JSON.parse(JSON.stringify(this.mods));
       ordered.sort((a, b) => {
@@ -378,10 +373,13 @@ el-dropdown-menu__list {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  max-width: 580px;
   color: #2c3e50;
+  max-width: 580px;
   /deep/ h2 {
     font-size: 1.5em;
+  }
+  .el-tabs {
+    min-height: 600px;
   }
   .code {
     background: #f8f8f8;

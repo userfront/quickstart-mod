@@ -1,13 +1,14 @@
 <template>
   <div>
-    <pre><code :class="`language-${language}`" v-html="content" ref="code"></code><el-button
+    <pre><code :class="`language-${language}`" v-html="content" ref="code"></code><div class="button-corner"><a v-if="example" :href="example" class="example-link" target="_blank">See example</a><el-button
   type="primary"
   size="mini"
   @click="copyToClipboard"
   :icon="showCheck ? 'el-icon-check' : ''"
   plain
   ref="button"
->Copy</el-button></pre>
+>Copy</el-button>
+</div></pre>
   </div>
 </template>
 
@@ -22,7 +23,7 @@ hljs.registerLanguage("css", hljsCss);
 import "highlight.js/styles/github.css";
 
 export default {
-  props: ["content", "language"],
+  props: ["content", "language", "example"],
   data() {
     return {
       showCheck: false
@@ -69,10 +70,23 @@ pre {
 }
 pre > code {
   font-size: 14px;
+  min-height: 22px;
 }
-button {
+.button-corner {
   position: absolute;
   top: 3px;
   right: 3px;
+  display: flex;
+}
+.example-link {
+  padding: 4px 12px;
+  margin-right: 5px;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  color: #5e72e4;
+  font-size: 14px;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 }
 </style>

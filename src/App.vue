@@ -20,7 +20,9 @@
         Paste this script inside your HTML
         <span class="code">&lt;head&gt;</span> & above any other scripts.
       </p>
-      <pre><code class="language-html" v-html="scriptHtml()"></code></pre>
+      <pre><code class="language-html" v-html="scriptHtml()" id="project-script"></code>
+        <copy-button :content="scriptHtml()"></copy-button>
+      </pre>
 
       <br />
 
@@ -47,7 +49,9 @@
           wherever you want the
           {{ mod.displayTitle }} to show:
         </p>
-        <pre><code class="language-html" v-html="modHtml(mod)"></code></pre>
+        <pre><code class="language-html" v-html="modHtml(mod)"></code>
+          <copy-button :content="modHtml(mod)"></copy-button>
+        </pre>
 
         <div>
           See an
@@ -146,6 +150,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import jwt_decode from "jwt-decode";
+import CopyButton from "./components/copy-button.vue";
 
 import hljs from "highlight.js/lib/core";
 import hljsHtml from "highlight.js/lib/languages/xml";
@@ -168,6 +173,7 @@ const demoProject = {
 
 export default {
   name: "App",
+  components: { CopyButton },
   data() {
     return {
       modData: this.$mod.data || {},
@@ -401,6 +407,9 @@ el-dropdown-menu__list {
     display: inline-block;
     padding: 1px 3px;
     margin: 0 2px;
+  }
+  pre {
+    position: relative;
   }
   pre > code {
     font-size: 14px;

@@ -20,9 +20,7 @@
         Paste this script inside your HTML
         <span class="code">&lt;head&gt;</span> & above any other scripts.
       </p>
-      <pre><code class="language-html" v-html="scriptHtml()" id="project-script"></code>
-        <copy-button :content="scriptHtml()"></copy-button>
-      </pre>
+      <code-block :content="scriptHtml()" language="html"></code-block>
 
       <br />
 
@@ -49,9 +47,7 @@
           wherever you want the
           {{ mod.displayTitle }} to show:
         </p>
-        <pre><code class="language-html" v-html="modHtml(mod)"></code>
-          <copy-button :content="modHtml(mod)"></copy-button>
-        </pre>
+        <code-block :content="modHtml(mod)" language="html"></code-block>
 
         <div>
           See an
@@ -71,7 +67,7 @@
           <span class="code">div</span> in your render code, and call
           <span class="code">Userfront.render()</span>.
         </p>
-        <pre><code class="language-javascript" v-html="modReact(mod)"></code></pre>
+        <code-block :content="modReact(mod)" language="javascript"></code-block>
 
         <div>
           See a
@@ -90,13 +86,14 @@
           Add the
           <span class="code">div</span> inside your Vue app:
         </p>
-        <pre><code class="language-html" v-html="modVueHtml(mod)"></code></pre>
+        <code-block :content="modVueHtml(mod)" language="html"></code-block>
+
         <p>
           Call
           <span class="code">Userfront.render()</span> once your component has
           mounted:
         </p>
-        <pre><code class="language-javascript" v-html="modVueJs()"></code></pre>
+        <code-block :content="modVueJs()" language="javascript"></code-block>
 
         <div>
           See a
@@ -116,14 +113,13 @@
           <span class="code">Userfront</span> available in your
           <span class="code">.ts</span> file:
         </p>
-        <pre><code class="language-javascript">declare var Userfront: any;</code></pre>
-        <br />
+        <code-block :content="'declare var Userfront: any;'" language="javascript"></code-block>
         <p>
           Call
           <span class="code">Userfront.render()</span> in your component:
         </p>
 
-        <pre><code class="language-javascript" v-html="modAngular(mod)"></code></pre>
+        <code-block :content="modAngular(mod)" language="javascript"></code-block>
 
         <div>
           See an
@@ -150,16 +146,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import jwt_decode from "jwt-decode";
-import CopyButton from "./components/copy-button.vue";
-
-import hljs from "highlight.js/lib/core";
-import hljsHtml from "highlight.js/lib/languages/xml";
-import hljsJs from "highlight.js/lib/languages/javascript";
-import hljsCss from "highlight.js/lib/languages/css";
-hljs.registerLanguage("html", hljsHtml);
-hljs.registerLanguage("javascript", hljsJs);
-hljs.registerLanguage("css", hljsCss);
-import "highlight.js/styles/github.css";
+import CodeBlock from "./components/code-block.vue";
 
 const isProduction = process.env.NODE_ENV === "production";
 const baseDomain = isProduction ? "api.userfront.com" : "localhost:5001";
@@ -173,7 +160,7 @@ const demoProject = {
 
 export default {
   name: "App",
-  components: { CopyButton },
+  components: { CodeBlock },
   data() {
     return {
       modData: this.$mod.data || {},
@@ -261,21 +248,16 @@ export default {
     setProject(project) {
       if (!project || !project.tenantId) return;
       this.project = project;
-      setTimeout(this.highlightCode, 0);
+      // setTimeout(this.highlightCode, 0);
     },
     setMod(eid) {
       if (!eid) return;
       this.mods.map(mod => {
         if (mod.eid === eid) {
           this.mod = mod;
-          setTimeout(this.highlightCode, 0);
+          // setTimeout(this.highlightCode, 0);
         }
       });
-    },
-    highlightCode() {
-      document
-        .querySelectorAll("#app-quickstart pre > code")
-        .forEach(hljs.highlightBlock);
     },
     scriptHtml() {
       if (!this.project || !this.project.tenantId) return;
@@ -320,8 +302,7 @@ export default {
 })`;
     },
     modAngular({ eid }) {
-      return `
-@Component({
+      return `@Component({
   ...
   template: \`&lt;div id="userfront-${eid}"&gt;&lt;/div&gt;\`,
 })
@@ -407,12 +388,6 @@ el-dropdown-menu__list {
     display: inline-block;
     padding: 1px 3px;
     margin: 0 2px;
-  }
-  pre {
-    position: relative;
-  }
-  pre > code {
-    font-size: 14px;
   }
   .color-purple {
     color: #5e72e4;

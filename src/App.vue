@@ -24,24 +24,24 @@
 
       <br />
 
-      <div v-show="mod.eid">
-        <el-dropdown trigger="click" @command="setMod" placement="bottom-start">
-          <span class="el-dropdown-link">
-            {{ mod.displayTitle }}&nbsp;
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              v-for="mod in orderedMods"
-              :key="mod.eid"
-              :command="mod.eid"
-            >{{ mod.displayTitle }}</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <el-badge :value="mod.eid" type="info"></el-badge>
+      <el-dropdown trigger="click" @command="setMod" placement="bottom-start" v-show="mod.eid">
+        <span class="el-dropdown-link">
+          {{ mod.displayTitle }}&nbsp;
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item
+            v-for="mod in orderedMods"
+            :key="mod.eid"
+            :command="mod.eid"
+          >{{ mod.displayTitle }}</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <el-badge :value="mod.eid" type="info"></el-badge>
 
-        <!-- HTML -->
-        <el-tab-pane label="HTML" name="html">
+      <!-- HTML -->
+      <el-tab-pane label="HTML" name="html">
+        <div v-show="mod.eid">
           <p>
             Paste this div inside your HTML
             <span class="code">&lt;body&gt;</span>
@@ -53,11 +53,13 @@
             language="html"
             example="https://codesandbox.io/s/userfront-html-example-r06ky?file=/index.html"
           ></code-block>
-        </el-tab-pane>
-        <!-- /HTML -->
+        </div>
+      </el-tab-pane>
+      <!-- /HTML -->
 
-        <!-- React -->
-        <el-tab-pane label="React" name="react">
+      <!-- React -->
+      <el-tab-pane label="React" name="react">
+        <div v-show="mod.eid">
           <p>
             Add the
             <span class="code">div</span> in your render code, and call
@@ -68,11 +70,13 @@
             language="javascript"
             example="https://codesandbox.io/s/userfront-react-example-rhbyl"
           ></code-block>
-        </el-tab-pane>
-        <!-- /React -->
+        </div>
+      </el-tab-pane>
+      <!-- /React -->
 
-        <!-- Vue -->
-        <el-tab-pane label="Vue" name="vue">
+      <!-- Vue -->
+      <el-tab-pane label="Vue" name="vue">
+        <div v-show="mod.eid">
           <p>
             Add the
             <span class="code">div</span> inside your Vue app:
@@ -93,11 +97,13 @@
             language="javascript"
             example="https://codesandbox.io/s/userfront-vue-example-hxuuw"
           ></code-block>
-        </el-tab-pane>
-        <!-- /Vue -->
+        </div>
+      </el-tab-pane>
+      <!-- /Vue -->
 
-        <!-- Angular -->
-        <el-tab-pane label="Angular" name="angular">
+      <!-- Angular -->
+      <el-tab-pane label="Angular" name="angular">
+        <div v-show="mod.eid">
           <p>
             Make
             <span class="code">Userfront</span> available in your
@@ -118,18 +124,18 @@
             language="javascript"
             example="https://codesandbox.io/s/userfront-angular-example-wrwn9?file=/src/app/app.component.ts"
           ></code-block>
-        </el-tab-pane>
-        <!-- /Angular -->
+        </div>
+      </el-tab-pane>
+      <!-- /Angular -->
 
-        <div v-if="mod.previewImageManual">
-          Result:
-          <div style="width:100%;text-align:center;">
-            <img
-              :src="mod.previewImageManual"
-              :alt="mod.displayTitle"
-              style="max-width:100%;height:auto;margin:20px 0 0;"
-            />
-          </div>
+      <div v-if="mod.previewImageManual">
+        Result:
+        <div style="width:100%;text-align:center;">
+          <img
+            :src="mod.previewImageManual"
+            :alt="mod.displayTitle"
+            style="max-width:100%;height:auto;margin:20px 0 0;"
+          />
         </div>
       </div>
     </el-tabs>

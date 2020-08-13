@@ -24,7 +24,7 @@
 
       <br />
 
-      <div v-if="mod.eid">
+      <div v-show="mod.eid">
         <el-dropdown trigger="click" @command="setMod" placement="bottom-start">
           <span class="el-dropdown-link">
             {{ mod.displayTitle }}&nbsp;

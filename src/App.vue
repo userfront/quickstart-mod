@@ -51,7 +51,7 @@
           <code-block
             :content="modHtml(mod)"
             language="html"
-            example="https://codesandbox.io/s/userfront-html-example-r06ky?file=/index.html"
+            example="https://codepen.io/userfront/pen/MWyjXXq"
           ></code-block>
         </div>
       </el-tab-pane>
@@ -228,11 +228,14 @@ export default {
       if (!projectEid) return;
       this.loading = true;
       try {
+        const token = projectEid.includes("demo")
+          ? "demo"
+          : this.accessJwt || "demo";
         const { data } = await axios.get(
           `${apiUrl}mods?project=${projectEid}`,
           {
             headers: {
-              authorization: `Bearer ${this.accessJwt || "demo"}`
+              authorization: `Bearer ${token}`
             }
           }
         );

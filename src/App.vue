@@ -15,7 +15,6 @@
         </el-dropdown-menu>
       </el-dropdown>
       <el-badge :value="project.tenantId" type="info"></el-badge>
-
       <p>
         Paste this script inside your HTML
         <span class="code">&lt;head&gt;</span> & above any other scripts.
@@ -210,6 +209,13 @@ export default {
         return matchA - matchB;
       });
       return ordered;
+    },
+    urlEid() {
+      try {
+        return window.location.href.split("/projects/")[1].split("/")[0];
+      } catch (err) {
+        return undefined;
+      }
     }
   },
   watch: {
@@ -218,8 +224,9 @@ export default {
         !newProject ||
         !newProject.tenantId ||
         newProject.tenantId === (oldProject && oldProject.tenantId)
-      )
+      ) {
         return;
+      }
       this.getMods(newProject.tenantId);
     }
   },
@@ -251,15 +258,22 @@ export default {
     },
     setProject(project) {
       if (!project || !project.tenantId) return;
+      if (this.urlEid) return this.setProjectFromEid(this.urlEid);
       this.project = project;
-      // setTimeout(this.highlightCode, 0);
+    },
+    setProjectFromEid(eid) {
+      if (!eid) return;
+      let project = demoProject;
+      this.projects.map(proj => {
+        if (proj.tenantId === eid) project = proj;
+      });
+      this.project = project;
     },
     setMod(eid) {
       if (!eid) return;
       this.mods.map(mod => {
         if (mod.eid === eid) {
           this.mod = mod;
-          // setTimeout(this.highlightCode, 0);
         }
       });
     },

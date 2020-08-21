@@ -7,14 +7,10 @@
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item
-            v-for="proj in projects"
-            :key="proj.tenantId"
-            :command="proj"
-          >{{ proj.name }}</el-dropdown-item>
+          <el-dropdown-item v-for="proj in projects" :key="proj.eid" :command="proj">{{ proj.name }}</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-      <el-badge :value="project.tenantId" type="info"></el-badge>
+      <el-badge :value="project.eid" type="info"></el-badge>
       <p>
         Paste this script inside your HTML
         <span class="code">&lt;head&gt;</span> & above any other scripts.
@@ -144,7 +140,6 @@
 <script>
 import axios from "axios";
 import Cookies from "js-cookie";
-import jwt_decode from "jwt-decode";
 import CodeBlock from "./components/code-block.vue";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -153,7 +148,7 @@ const apiUrl = `http${isProduction ? "s" : ""}://${baseDomain}/v0/`;
 const cookieName = "access.q68b5qb9";
 
 const demoProject = {
-  tenantId: "demo1234",
+  eid: "demo1234",
   name: "Demo project"
 };
 
@@ -167,6 +162,7 @@ export default {
       activeName: "html",
       html: "",
       project: demoProject,
+      projects: [],
       mods: [],
       mod: {}
     };
@@ -174,24 +170,6 @@ export default {
   computed: {
     accessJwt() {
       return Cookies.get(cookieName);
-    },
-    decodedAccessToken() {
-      if (!this.accessJwt) return;
-      return jwt_decode(this.accessJwt);
-    },
-    projects() {
-      if (!this.decodedAccessToken) return [demoProject];
-      const projects = [];
-      this.decodedAccessToken.authorization.map(project => {
-        if (project.tenantId) {
-          projects.push({
-            tenantId: project.tenantId,
-            name: project.name
-          });
-        }
-      });
-      if (projects.length === 0) return [demoProject];
-      return projects;
     },
     orderedMods() {
       const order = [/signup/i, /login/i, /reset/i, /logout/i];
@@ -222,15 +200,28 @@ export default {
     project(newProject, oldProject) {
       if (
         !newProject ||
-        !newProject.tenantId ||
-        newProject.tenantId === (oldProject && oldProject.tenantId)
+        !newProject.eid ||
+        newProject.eid === (oldProject && oldProject.eid)
       ) {
         return;
       }
-      this.getMods(newProject.tenantId);
+      this.getMods(newProject.eid);
     }
   },
   methods: {
+    async getProjects() {
+      if (!this.accessJwt) return (this.projects = [demoProject]);
+      const { data } = await axios.get(`${apiUrl}users/self`, {
+        headers: {
+          authorization: `Bearer ${this.accessJwt}`
+        }
+      });
+      if (data.permittedProjects && data.permittedProjects.length > 0) {
+        this.projects = data.permittedProjects;
+      } else {
+        this.projects = [demoProject];
+      }
+    },
     async getMods(projectEid) {
       if (!projectEid) return;
       this.loading = true;
@@ -257,7 +248,7 @@ export default {
       }
     },
     setProject(project) {
-      if (!project || !project.tenantId) return;
+      if (!project || !project.eid) return;
       if (this.urlEid) return this.setProjectFromEid(this.urlEid);
       this.project = project;
     },
@@ -265,7 +256,7 @@ export default {
       if (!eid) return;
       let project = demoProject;
       this.projects.map(proj => {
-        if (proj.tenantId === eid) project = proj;
+        if (proj.eid === eid) project = proj;
       });
       this.project = project;
     },
@@ -278,12 +269,12 @@ export default {
       });
     },
     scriptHtml() {
-      if (!this.project || !this.project.tenantId) return;
+      if (!this.project || !this.project.eid) return;
       const scr = `&lt;script id="Userfront-script"&gt;
   (function(m,o,d,u,l,a,r,i,z,e) {
     u[m]={rq:[],ready:function(j){u[m].rq.push(j);},m:m,o:o,d:d,r:r};function j(s){return encodeURIComponent(btoa(s));}z=l.getElementById(m+"-"+a);r=u.location;
     e=[d+"/page/"+o+"/"+j(r.pathname)+"/"+j(r.host)+"?t="+Date.now(),d];e.map(function(w){i=l.createElement(a);i.defer=1;i.src=w;z.parentNode.insertBefore(i,z);});u.amvartem=m;
-  })("Userfront", "${this.project.tenantId}", "https://mod.userfront.com/v2",window,document,"script");
+  })("Userfront", "${this.project.eid}", "https://mod.userfront.com/v2",window,document,"script");
 &lt;/script&gt;`;
       return scr;
     },
@@ -345,8 +336,9 @@ class UserfrontDemo {
     }
   },
   async mounted() {
+    await this.getProjects();
     this.setProject(this.projects[0]);
-    this.getMods(this.project.tenantId);
+    this.getMods(this.project.eid);
 
     // Hack to add styles outside of mod
     const styleTag = document.createElement("style");

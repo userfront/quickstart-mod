@@ -1,16 +1,25 @@
 <template>
   <div id="app-quickstart">
     <el-tabs v-model="activeName" type="border-card" v-loading="loading">
-      <el-dropdown trigger="click" @command="setProject" placement="bottom-start">
+      <el-dropdown
+        trigger="click"
+        @command="setTenant"
+        placement="bottom-start"
+      >
         <span class="el-dropdown-link">
-          {{ project.name }}&nbsp;
+          {{ tenant.name }}&nbsp;
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-for="proj in projects" :key="proj.eid" :command="proj">{{ proj.name }}</el-dropdown-item>
+          <el-dropdown-item
+            v-for="t in tenants"
+            :key="t.tenantId"
+            :command="t"
+            >{{ t.name }}</el-dropdown-item
+          >
         </el-dropdown-menu>
       </el-dropdown>
-      <el-badge :value="project.eid" type="info"></el-badge>
+      <el-badge :value="tenant.tenantId" type="info"></el-badge>
       <p>
         Paste this script inside your HTML
         <span class="code">&lt;head&gt;</span> & above any other scripts.
@@ -19,7 +28,12 @@
 
       <br />
 
-      <el-dropdown trigger="click" @command="setMod" placement="bottom-start" v-show="mod.eid">
+      <el-dropdown
+        trigger="click"
+        @command="setMod"
+        placement="bottom-start"
+        v-show="mod.eid"
+      >
         <span class="el-dropdown-link">
           {{ mod.displayTitle }}&nbsp;
           <i class="el-icon-arrow-down el-icon--right"></i>
@@ -29,7 +43,8 @@
             v-for="mod in orderedMods"
             :key="mod.eid"
             :command="mod.eid"
-          >{{ mod.displayTitle }}</el-dropdown-item>
+            >{{ mod.displayTitle }}</el-dropdown-item
+          >
         </el-dropdown-menu>
       </el-dropdown>
       <el-badge :value="mod.eid" type="info"></el-badge>
@@ -142,14 +157,12 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import CodeBlock from "./components/code-block.vue";
 
-const isProduction = process.env.NODE_ENV === "production";
-const baseDomain = isProduction ? "api.userfront.com" : "localhost:5001";
-const apiUrl = `http${isProduction ? "s" : ""}://${baseDomain}/v0/`;
-const cookieName = "access.q68b5qb9";
+const apiUrl = `https://api.userfront.com/v0/`;
+const cookieName = "access.p9ny8bdj";
 
-const demoProject = {
-  eid: "demo1234",
-  name: "Demo project"
+const demoTenant = {
+  tenantId: "demo1234",
+  name: "Demo project",
 };
 
 export default {
@@ -161,10 +174,10 @@ export default {
       loading: false,
       activeName: "html",
       html: "",
-      project: demoProject,
-      projects: [],
+      tenant: demoTenant,
+      tenants: [],
       mods: [],
-      mod: {}
+      mod: {},
     };
   },
   computed: {
@@ -194,49 +207,46 @@ export default {
       } catch (err) {
         return undefined;
       }
-    }
+    },
   },
   watch: {
-    project(newProject, oldProject) {
+    tenant(newTenant, oldTenant) {
       if (
-        !newProject ||
-        !newProject.eid ||
-        newProject.eid === (oldProject && oldProject.eid)
+        !newTenant ||
+        !newTenant.tenantId ||
+        newTenant.tenantId === (oldTenant && oldTenant.tenantId)
       ) {
         return;
       }
-      this.getMods(newProject.eid);
-    }
+      this.getMods(newTenant.tenantId);
+    },
   },
   methods: {
-    async getProjects() {
-      if (!this.accessJwt) return (this.projects = [demoProject]);
-      const { data } = await axios.get(`${apiUrl}users/self`, {
+    async getTenants() {
+      if (!this.accessJwt) return (this.tenants = [demoTenant]);
+      const { data } = await axios.get(`${apiUrl}self`, {
         headers: {
-          authorization: `Bearer ${this.accessJwt}`
-        }
+          authorization: `Bearer ${this.accessJwt}`,
+        },
       });
-      if (data.permittedProjects && data.permittedProjects.length > 0) {
-        this.projects = data.permittedProjects;
+      if (data.permittedTenants && data.permittedTenants.length > 0) {
+        this.tenants = data.permittedTenants;
       } else {
-        this.projects = [demoProject];
+        this.tenants = [demoTenant];
       }
     },
-    async getMods(projectEid) {
-      if (!projectEid) return;
+    async getMods(tenantEid) {
+      if (!tenantEid) return;
       this.loading = true;
       try {
-        const token = projectEid.includes("demo")
+        const token = tenantEid.includes("demo")
           ? "demo"
           : this.accessJwt || "demo";
-        const { data } = await axios.get(
-          `${apiUrl}mods?project=${projectEid}`,
-          {
-            headers: {
-              authorization: `Bearer ${token}`
-            }
-          }
-        );
+        const { data } = await axios.get(`${apiUrl}tenants/${tenantEid}/mods`, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
         this.mods = data.results;
         this.mod = {};
         if (this.mods.length > 0) {
@@ -247,34 +257,34 @@ export default {
         this.loading = false;
       }
     },
-    setProject(project) {
-      if (!project || !project.eid) return;
-      if (this.urlEid) return this.setProjectFromEid(this.urlEid);
-      this.project = project;
+    setTenant(tenant) {
+      if (!tenant || !tenant.tenantId) return;
+      if (this.urlEid) return this.setTenantFromEid(this.urlEid);
+      this.tenant = tenant;
     },
-    setProjectFromEid(eid) {
+    setTenantFromEid(eid) {
       if (!eid) return;
-      let project = demoProject;
-      this.projects.map(proj => {
-        if (proj.eid === eid) project = proj;
+      let tenant = demoTenant;
+      this.tenants.map((ten) => {
+        if (ten.tenantId === eid) tenant = ten;
       });
-      this.project = project;
+      this.tenant = tenant;
     },
     setMod(eid) {
       if (!eid) return;
-      this.mods.map(mod => {
+      this.mods.map((mod) => {
         if (mod.eid === eid) {
           this.mod = mod;
         }
       });
     },
     scriptHtml() {
-      if (!this.project || !this.project.eid) return;
+      if (!this.tenant || !this.tenant.tenantId) return;
       const scr = `&lt;script id="Userfront-script"&gt;
   (function(m,o,d,u,l,a,r,i,z,e) {
     u[m]={rq:[],ready:function(j){u[m].rq.push(j);},m:m,o:o,d:d,r:r};function j(s){return encodeURIComponent(btoa(s));}z=l.getElementById(m+"-"+a);r=u.location;
     e=[d+"/page/"+o+"/"+j(r.pathname)+"/"+j(r.host)+"?t="+Date.now(),d];e.map(function(w){i=l.createElement(a);i.defer=1;i.src=w;z.parentNode.insertBefore(i,z);});u.amvartem=m;
-  })("Userfront", "${this.project.eid}", "https://mod.userfront.com/v2",window,document,"script");
+  })("Userfront", "${this.tenant.tenantId}", "https://mod.userfront.com/v2",window,document,"script");
 &lt;/script&gt;`;
       return scr;
     },
@@ -327,18 +337,20 @@ class UserfrontDemo {
     addModStyling(isOpening) {
       try {
         if (!isOpening) return;
-        document.querySelectorAll(".el-dropdown-menu.el-popper").forEach(el => {
-          el.setAttribute(this.$mod.key, "");
-        });
+        document
+          .querySelectorAll(".el-dropdown-menu.el-popper")
+          .forEach((el) => {
+            el.setAttribute(this.$mod.key, "");
+          });
       } catch (err) {
         return;
       }
-    }
+    },
   },
   async mounted() {
-    await this.getProjects();
-    this.setProject(this.projects[0]);
-    this.getMods(this.project.eid);
+    await this.getTenants();
+    this.setTenant(this.tenants[0]);
+    this.getMods(this.tenant.tenantId);
 
     // Hack to add styles outside of mod
     const styleTag = document.createElement("style");
@@ -378,7 +390,7 @@ el-dropdown-menu__list {
   padding: 0;
 }`;
     document.head.appendChild(styleTag);
-  }
+  },
 };
 </script>
 

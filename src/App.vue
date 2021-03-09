@@ -20,12 +20,18 @@
         </el-dropdown-menu>
       </el-dropdown>
       <el-badge :value="tenant.tenantId" type="info"></el-badge>
-      <p>
-        Paste this script inside your HTML
-        <span class="code">&lt;head&gt;</span> & above any other scripts.
-      </p>
-      <code-block :content="scriptHtml()" language="html"></code-block>
-
+      <div v-if="activeName !== 'react'">
+        <p>
+          Paste this script inside your HTML
+          <span class="code">&lt;head&gt;</span> & above any other scripts.
+        </p>
+        <code-block :content="scriptHtml()" language="html"></code-block>
+      </div>
+      <div v-if="activeName === 'react'">
+        <p>
+          Import <span class="code">@userfront/react</span> and initialize it.
+        </p>
+      </div>
       <br />
 
       <el-dropdown
@@ -70,11 +76,7 @@
       <!-- React -->
       <el-tab-pane label="React" name="react">
         <div v-show="mod.eid">
-          <p>
-            Add the
-            <span class="code">div</span> in your render code, and call
-            <span class="code">Userfront.render()</span>.
-          </p>
+          <p>Build and render your {{ mod.displayTitle }}.</p>
           <code-block
             :content="modReact(mod)"
             language="javascript"
@@ -278,6 +280,13 @@ export default {
         }
       });
     },
+    methodTitle(displayTitle) {
+      if (!displayTitle) return "";
+      return displayTitle
+        .split(/ /g)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join("");
+    },
     scriptHtml() {
       if (!this.tenant || !this.tenant.tenantId) return;
       const scr = `&lt;script id="Userfront-script"&gt;
@@ -294,13 +303,19 @@ export default {
       return tag;
     },
     modReact({ eid, displayTitle }) {
-      return `class Demo extends React.Component {
-  componentDidMount () {
-    Userfront.render()
-  }
+      const methodTitle = this.methodTitle(displayTitle);
+      return `
+import Userfront from "@userfront/react";
+
+Userfront.init("${this.tenant.tenantId}");
+
+const ${methodTitle}() = Userfront.build({
+  toolId: "${eid}"
+});
+
+class Demo extends React.Component {
   render () {
-    // ${displayTitle}
-    return &lt;div id="userfront-${eid}"&gt;&lt;/div&gt;
+    return &lt;${methodTitle} /&gt;
   }
 }`;
     },
@@ -354,7 +369,6 @@ class UserfrontDemo {
 
     // Hack to add styles outside of mod
     const styleTag = document.createElement("style");
-    styleTag.type = "text/css";
     styleTag.innerHTML = `
 .el-dropdown-menu.el-popper {
   position: absolute;
